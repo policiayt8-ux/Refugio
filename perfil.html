@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi perfil — Refugio</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --cream: #F7F3EC; --sand: #E8E4DD; --olive: #7C8B6E; --olive-deep: #5F6C53;
+    --blue: #6E8B99; --ink: #3A3A38; --ink-soft: #6B6862; --white: #FFFDFB;
+  }
+  body { font-family: 'Karla', sans-serif; background: var(--cream); color: var(--ink); padding: 28px 20px; }
+  .wrap { max-width: 420px; margin: 0 auto; }
+  a.back { color: var(--ink-soft); font-size: 13px; text-decoration: none; }
+  h1 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 500; margin: 18px 0 22px; }
+  section { margin-bottom: 20px; background: var(--white); border-radius: 16px; padding: 18px 20px; box-shadow: 0 4px 16px rgba(58,58,56,0.05); }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--olive-deep); margin-bottom: 12px; }
+  .row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--sand); font-size: 14px; }
+  .row:last-child { border-bottom: none; }
+  .avatar-choice { display: flex; gap: 10px; }
+  .avatar-choice button { flex:1; padding: 10px; border-radius: 12px; border: 1.5px solid var(--sand); background: var(--cream); font-family: 'Karla', sans-serif; font-size: 13px; cursor: pointer; }
+  .avatar-choice button.active { border-color: var(--olive); background: rgba(124,139,110,0.1); font-weight: 600; }
+  .toggle-switch { width: 40px; height: 22px; background: var(--sand); border-radius: 12px; position: relative; cursor: pointer; }
+  .toggle-switch.on { background: var(--olive); }
+  .toggle-switch::after { content:''; position:absolute; width:18px; height:18px; background:var(--white); border-radius:50%; top:2px; left:2px; transition: left 0.15s; }
+  .toggle-switch.on::after { left:20px; }
+  .plan-badge { background: var(--sand); padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  button.danger { width:100%; background:none; border:1.5px solid #D9A26C; color:#B5533C; border-radius:14px; padding:12px; font-family:'Karla',sans-serif; font-weight:600; font-size:13px; cursor:pointer; margin-top: 8px; }
+  button.link-btn { width:100%; background:none; border:none; color:var(--ink-soft); text-decoration:underline; padding:10px; font-family:'Karla',sans-serif; font-size:13px; cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Volver al chat</a>
+  <h1>Mi perfil</h1>
+
+  <section>
+    <h2>Avatar</h2>
+    <div class="avatar-choice">
+      <button class="active" id="avatarF">Femenino</button>
+      <button id="avatarM">Masculino</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Preferencias</h2>
+    <div class="row">
+      <span>Leer respuestas en voz alta</span>
+      <div class="toggle-switch" id="voiceToggleProfile"></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Mi plan</h2>
+    <div class="row">
+      <span>Plan actual</span>
+      <span class="plan-badge" id="planBadge">Gratis</span>
+    </div>
+    <button class="link-btn" id="upgradeLink">Ver opciones Premium →</button>
+  </section>
+
+  <section>
+    <h2>Privacidad y datos</h2>
+    <button class="link-btn" onclick="window.location.href='sobre-refugio.html'">Ver Aviso de Privacidad</button>
+    <button class="danger" id="deleteAccountBtn">Eliminar mi cuenta y todos mis datos</button>
+  </section>
+</div>
+
+<script>
+  document.getElementById('avatarF').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('avatarM').classList.remove('active');
+  });
+  document.getElementById('avatarM').addEventListener('click', function() {
+    this.classList.add('active');
+    document.getElementById('avatarF').classList.remove('active');
+  });
+  document.getElementById('voiceToggleProfile').addEventListener('click', function() {
+    this.classList.toggle('on');
+  });
+  document.getElementById('upgradeLink').addEventListener('click', () => {
+    window.location.href = 'index.html?abrirPrecios=true';
+  });
+  document.getElementById('deleteAccountBtn').addEventListener('click', () => {
+    if (confirm('¿Seguro que quieres eliminar tu cuenta? Esto borra todos tus datos y no se puede deshacer.')) {
+      // EN PRODUCCIÓN: aquí se llama a supabaseClient.auth.admin.deleteUser()
+      // vía una función de backend (requiere service_role key, nunca en frontend)
+      alert('(Prototipo) En producción, esto eliminaría tu cuenta y datos de forma permanente.');
+    }
+  });
+</script>
+</body>
+</html>

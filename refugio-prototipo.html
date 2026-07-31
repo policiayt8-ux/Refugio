@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refugio — Prototipo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F3EC;
+    --sand: #E8E4DD;
+    --olive: #7C8B6E;
+    --olive-deep: #5F6C53;
+    --blue: #6E8B99;
+    --ink: #3A3A38;
+    --ink-soft: #6B6862;
+    --white: #FFFDFB;
+  }
+
+  body {
+    font-family: 'Karla', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app {
+    width: 100%;
+    max-width: 420px;
+    background: var(--white);
+    border-radius: 28px;
+    box-shadow: 0 20px 60px rgba(58, 58, 56, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 780px;
+  }
+
+  .header {
+    background: linear-gradient(180deg, var(--sand) 0%, var(--cream) 100%);
+    padding: 28px 24px 20px;
+    text-align: center;
+    position: relative;
+  }
+
+  .header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+
+  .header .sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-top: 4px;
+  }
+
+  /* Avatar */
+  .avatar-stage {
+    background: var(--sand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0 8px;
+  }
+
+  .avatar {
+    width: 140px;
+    height: 140px;
+  }
+
+  .face-bg { fill: #DDD3C0; }
+  .face { fill: #EFC9A0; }
+  .hair { fill: var(--olive-deep); }
+  .eye { fill: var(--ink); animation: blink 4.5s infinite; transform-origin: center; }
+  .eye.right { animation-delay: 0.05s; }
+  .mouth {
+    fill: #A65D4E;
+    transform-origin: center;
+    transition: transform 0.09s ease-in-out;
+  }
+  .mouth.talking { animation: talk 0.32s ease-in-out infinite; }
+
+  @keyframes blink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    95% { transform: scaleY(0.1); }
+  }
+  @keyframes talk {
+    0%, 100% { transform: scaleY(1); }
+    50% { transform: scaleY(1.8); }
+  }
+
+  .status-pill {
+    font-size: 11px;
+    color: var(--olive-deep);
+    background: rgba(124,139,110,0.12);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  /* Chat */
+  .chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: var(--white);
+  }
+
+  .msg {
+    max-width: 78%;
+    padding: 11px 15px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .msg.ai {
+    background: var(--sand);
+    color: var(--ink);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg.user {
+    background: var(--olive);
+    color: var(--white);
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .typing {
+    display: flex;
+    gap: 4px;
+    padding: 12px 15px;
+    background: var(--sand);
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+    width: fit-content;
+  }
+  .typing span {
+    width: 6px; height: 6px;
+    background: var(--ink-soft);
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .typing span:nth-child(2) { animation-delay: 0.15s; }
+  .typing span:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .input-bar {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    background: var(--white);
+    border-top: 1px solid var(--sand);
+  }
+
+  .input-bar input {
+    flex: 1;
+    border: 1px solid var(--sand);
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 11px 16px;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+  }
+  .input-bar input:focus { border-color: var(--olive); }
+
+  .input-bar button {
+    background: var(--olive);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 0 20px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .input-bar button:hover { background: var(--olive-deep); }
+  .input-bar button:disabled { background: var(--ink-soft); cursor: not-allowed; }
+
+  .limit-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    padding: 0 16px 14px;
+  }
+
+  /* Modal de consentimiento */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(58, 58, 56, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-box {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 32px 26px;
+    max-width: 380px;
+    text-align: center;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+  }
+
+  .modal-box .icon {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+
+  .modal-box h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+
+  .modal-box p {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+
+  .modal-box p strong { color: var(--ink); }
+
+  .modal-box button {
+    background: var(--olive);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 13px 28px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s;
+  }
+  .modal-box button:hover { background: var(--olive-deep); }
+
+  .app.blurred { filter: blur(4px); pointer-events: none; }
+
+  /* Límite alcanzado */
+  .limit-reached {
+    text-align: center;
+    padding: 18px 20px;
+    background: var(--sand);
+    border-radius: 16px;
+    margin: 4px 20px 0;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .limit-reached .upsell {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--olive);
+    color: var(--white);
+    padding: 8px 18px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 12.5px;
+    cursor: pointer;
+  }
+  .msg.ai.crisis {
+    background: #FBEFE4;
+    border: 1.5px solid #D9A26C;
+    font-weight: 500;
+  }
+  .voice-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .voice-toggle input { accent-color: var(--olive); cursor: pointer; }
+
+  /* Botón de ayuda siempre accesible */
+  .help-fab {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--sand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  .help-fab:hover { border-color: var(--olive); }
+
+  .resources-box {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 26px 22px;
+    max-width: 360px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+  }
+  .resources-box h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .resources-box .sub2 { font-size: 12px; color: var(--ink-soft); margin-bottom: 16px; }
+  .resources-box h3 {
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--olive-deep);
+    margin: 16px 0 8px;
+  }
+  .resource-item {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .resource-item .name { font-weight: 600; color: var(--ink); }
+  .resource-item .detail { color: var(--ink-soft); font-size: 12px; }
+  .resource-item.emergency { background: #FBEFE4; border: 1px solid #D9A26C; cursor: pointer; }
+  .resource-item .expand-detail {
+    display: none;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(217,162,108,0.3);
+  }
+  .resource-item.expanded .expand-detail { display: block; }
+  .gentle-note {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+  .resources-box .close-pricing { margin-top: 14px; }
+
+  /* Botón de plan de seguridad */
+  .safety-plan-btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0 20px 12px;
+    background: var(--cream);
+    border: 1.5px solid var(--sand);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 10px;
+    font-family: 'Karla', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+  }
+  .safety-plan-btn:hover { border-color: var(--olive); }
+
+  /* Pantalla de precios */
+  .pricing-box {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 380px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+  }
+  .pricing-box h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 500;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+  .pricing-box .sub2 {
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 20px;
+  }
+  .plan-card {
+    border: 1.5px solid var(--sand);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .plan-card.premium {
+    border-color: var(--olive);
+    background: rgba(124,139,110,0.06);
+  }
+  .plan-card .plan-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .plan-card .plan-price {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--olive-deep);
+    margin-bottom: 8px;
+  }
+  .plan-card .plan-price span { font-size: 12px; font-weight: 400; color: var(--ink-soft); }
+  .plan-card ul { list-style: none; font-size: 12.5px; color: var(--ink-soft); line-height: 1.9; }
+  .plan-card ul li::before { content: "· "; color: var(--olive); font-weight: 700; }
+  .pricing-box .close-pricing {
+    display: block;
+    margin: 10px auto 0;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .pricing-box .subscribe-btn {
+    width: 100%;
+    background: var(--olive);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 12px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .donate-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+  }
+  .donate-note a { color: var(--blue); }
+
+  .tier-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 12px 0;
+  }
+  .tier-option {
+    border: 1.5px solid var(--sand);
+    border-radius: 14px;
+    padding: 10px 8px;
+    text-align: center;
+    position: relative;
+  }
+  .tier-option.best {
+    border-color: var(--olive);
+    background: rgba(124,139,110,0.08);
+    transform: scale(1.03);
+  }
+  .tier-badge {
+    position: absolute;
+    top: -9px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--olive);
+    color: var(--white);
+    font-size: 9.5px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  .tier-label { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 2px; }
+  .tier-price { font-size: 18px; font-weight: 600; color: var(--ink); }
+  .tier-perday { font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; }
+  .tier-option.best .tier-perday { color: var(--olive-deep); font-weight: 600; }
+</style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<body>
+
+<div class="modal-overlay" id="consentModal">
+  <div class="modal-box">
+    <div class="icon">🌿</div>
+    <h2>Antes de comenzar</h2>
+    <p>Soy un espacio de apoyo emocional con inteligencia artificial. Estoy aquí para escucharte, acompañarte y ofrecerte técnicas psicológicas guiadas — pero <strong>no reemplazo en su totalidad el acompañamiento de un psicólogo humano</strong>. Soy una muleta temporal, no un diagnóstico ni un tratamiento profesional. Si estás en crisis, busca ayuda humana inmediata: Línea de la Vida, 800-911-2000.</p>
+    <button id="acceptBtn">Entiendo y acepto</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="pricingModal" style="display:none;">
+  <div class="pricing-box">
+    <h2>Elige tu espacio</h2>
+    <div class="sub2">Sin anuncios, nunca. Cancela cuando quieras.</div>
+
+    <div class="plan-card">
+      <div class="plan-name">Gratis</div>
+      <div class="plan-price">$0</div>
+      <ul>
+        <li>6 mensajes cada 24 horas</li>
+        <li>Avatar con voz del navegador</li>
+        <li>Sin memoria entre sesiones</li>
+      </ul>
+    </div>
+
+    <div class="tier-grid">
+      <div class="tier-option" data-tier="dia">
+        <div class="tier-label">1 día</div>
+        <div class="tier-price">$15</div>
+        <div class="tier-perday">$15.00/día</div>
+      </div>
+      <div class="tier-option" data-tier="3dias">
+        <div class="tier-label">3 días</div>
+        <div class="tier-price">$30</div>
+        <div class="tier-perday">$10.00/día</div>
+      </div>
+      <div class="tier-option" data-tier="semana">
+        <div class="tier-label">1 semana</div>
+        <div class="tier-price">$60</div>
+        <div class="tier-perday">$8.57/día</div>
+      </div>
+      <div class="tier-option best" data-tier="mes">
+        <div class="tier-badge">Mejor valor</div>
+        <div class="tier-label">1 mes</div>
+        <div class="tier-price">$129</div>
+        <div class="tier-perday">$4.30/día</div>
+      </div>
+    </div>
+
+    <div class="plan-card premium" style="margin-top:6px;">
+      <ul>
+        <li>Mensajes ilimitados</li>
+        <li>Voz natural (ElevenLabs)</li>
+        <li>IA con conversación más profunda</li>
+        <li>Memoria de tus conversaciones</li>
+        <li>Gráficos semanales de estado de ánimo</li>
+      </ul>
+      <button class="subscribe-btn" id="subscribeBtn">Continuar con 1 mes — $129</button>
+    </div>
+
+    <div class="donate-note">¿Prefieres apoyar sin suscribirte? <a href="#">Invítame un café</a></div>
+    <button class="close-pricing" id="closePricing">Seguir con el plan gratis</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="authModal" style="display:none;">
+  <div class="modal-box">
+    <div class="icon">🔑</div>
+    <h2 id="authTitle">Crea tu cuenta</h2>
+    <p style="margin-bottom:14px;">Con una cuenta, tu límite de mensajes y tu progreso son tuyos de verdad — no se borran al cerrar la pestaña.</p>
+    <input type="email" id="authEmail" placeholder="Tu correo" style="width:100%; padding:11px 14px; border-radius:14px; border:1px solid var(--sand); margin-bottom:10px; font-family:'Karla',sans-serif; font-size:14px;">
+    <input type="password" id="authPassword" placeholder="Contraseña (mínimo 6 caracteres)" style="width:100%; padding:11px 14px; border-radius:14px; border:1px solid var(--sand); margin-bottom:14px; font-family:'Karla',sans-serif; font-size:14px;">
+    <button id="authSubmit">Crear cuenta y entrar</button>
+    <button id="authToggle" style="background:none; color:var(--ink-soft); text-decoration:underline; margin-top:10px; box-shadow:none;">Ya tengo cuenta, iniciar sesión</button>
+    <div id="authError" style="color:#B5533C; font-size:12px; margin-top:10px;"></div>
+  </div>
+</div>
+
+<div class="app" id="appContainer">
+  <div class="header">
+    <button class="help-fab" id="helpFab" title="Ayuda y recursos">🆘</button>
+    <a href="perfil.html" class="help-fab" style="right:64px; text-decoration:none; display:flex; align-items:center; justify-content:center;" title="Mi perfil">👤</a>
+    <h1>Refugio</h1>
+    <div class="sub">Un espacio para pensar, no para curarte solo</div>
+    <div class="status-pill" style="margin-top:10px; background:rgba(110,139,153,0.14); color:var(--blue);">Apoyo emocional con IA · No sustituye la atención psicológica profesional</div>
+    <label class="voice-toggle">
+      <input type="checkbox" id="voiceToggle">
+      <span>🔊 Leer respuestas en voz alta</span>
+    </label>
+  </div>
+
+  <div class="modal-overlay" id="resourcesModal" style="display:none;">
+    <div class="resources-box">
+      <h2>Ayuda y recursos</h2>
+      <div class="sub2">Siempre disponible, sin importar tu plan</div>
+      <div class="gentle-note">Si en algún momento sientes que necesitas más de lo que aquí puedes encontrar, estas líneas están para ti. Toca cualquiera para saber más.</div>
+
+      <h3>Líneas de crisis 24/7 (gratuitas)</h3>
+
+      <div class="resource-item emergency" data-detail="Es un servicio nacional gratuito y confidencial. No necesitas estar seguro de nada para llamar — con que sientas que ya no puedes solo con esto, es razón suficiente.">
+        <div class="name">Línea de la Vida</div>
+        <div class="detail">800 911 2000</div>
+      </div>
+
+      <div class="resource-item emergency" data-detail="Orientación psicológica telefónica, con personas reales capacitadas para escucharte sin juzgarte, cueste lo que cueste lo que estés viviendo.">
+        <div class="name">SAPTEL</div>
+        <div class="detail">55 5259 8121</div>
+      </div>
+
+      <div class="resource-item emergency" data-detail="Atención ciudadana de la Ciudad de México, también disponible para orientación en momentos difíciles.">
+        <div class="name">Consejo Ciudadano CDMX</div>
+        <div class="detail">55 5533 5533</div>
+      </div>
+
+      <div class="resource-item emergency" data-detail="Si hay un peligro inmediato para tu vida o la de alguien más, esta es la línea correcta — llegan a ayudarte en persona, no solo por teléfono.">
+        <div class="name">Emergencias — 911</div>
+        <div class="detail">911 (línea nacional de emergencias)</div>
+      </div>
+
+      <h3>Terapia gratuita o de bajo costo</h3>
+      <div class="resource-item">
+        <div class="name">UNAM — Facultad de Psicología</div>
+        <div class="detail">Atención a distancia, sin costo</div>
+      </div>
+      <div class="resource-item">
+        <div class="name">DIF (tu alcaldía/municipio)</div>
+        <div class="detail">Centros de Desarrollo Comunitario, costo bajo o gratuito</div>
+      </div>
+      <div class="resource-item">
+        <div class="name">Centros de Salud (SEDESA y equivalentes)</div>
+        <div class="detail">Consulta psicológica gratuita o cuota mínima</div>
+      </div>
+
+      <button class="close-pricing" id="closeResources" style="display:block; margin:14px auto 0; background:none; border:none; color:var(--ink-soft); font-size:12.5px; text-decoration:underline; cursor:pointer;">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="avatar-stage">
+    <div style="display:flex; flex-direction:column; align-items:center;">
+      <svg class="avatar" viewBox="0 0 200 200" id="avatarSvg">
+        <circle class="face-bg" cx="100" cy="105" r="72"/>
+        <path class="hair" d="M 35 90 Q 30 30 100 28 Q 170 30 165 90 Q 150 55 100 55 Q 50 55 35 90 Z"/>
+        <circle class="face" cx="100" cy="112" r="58"/>
+        <ellipse class="eye left" cx="80" cy="105" rx="5" ry="7"/>
+        <ellipse class="eye right" cx="120" cy="105" rx="5" ry="7"/>
+        <path d="M 72 92 Q 80 87 88 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <path d="M 112 92 Q 120 87 128 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse class="mouth" id="mouth" cx="100" cy="138" rx="12" ry="4"/>
+      </svg>
+      <div class="status-pill" id="statusPill">escuchando</div>
+    </div>
+  </div>
+
+  <button class="safety-plan-btn" id="safetyPlanBtn">🛡️ Crear mi plan de seguridad personal</button>
+
+  <div class="chat" id="chat">
+    <div class="msg ai">Hola, soy Refugio. Este es un espacio para desahogarte y pensar con más claridad. ¿Qué tienes en mente hoy?</div>
+  </div>
+
+  <div class="input-bar">
+    <input type="text" id="userInput" placeholder="Escribe cómo te sientes..." maxlength="500">
+    <button id="sendBtn">Enviar</button>
+  </div>
+  <div class="limit-note">Prototipo visual — plan gratuito: 6 mensajes cada 24h</div>
+</div>
+
+<script>
+const chat = document.getElementById('chat');
+const input = document.getElementById('userInput');
+const sendBtn = document.getElementById('sendBtn');
+const mouth = document.getElementById('mouth');
+const statusPill = document.getElementById('statusPill');
+const appContainer = document.getElementById('appContainer');
+const consentModal = document.getElementById('consentModal');
+const helpFab = document.getElementById('helpFab');
+const resourcesModal = document.getElementById('resourcesModal');
+const closeResources = document.getElementById('closeResources');
+const safetyPlanBtn = document.getElementById('safetyPlanBtn');
+const acceptBtn = document.getElementById('acceptBtn');
+const pricingModal = document.getElementById('pricingModal');
+const closePricing = document.getElementById('closePricing');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const limitNote = document.querySelector('.limit-note');
+const voiceToggle = document.getElementById('voiceToggle');
+
+const DAILY_LIMIT = 6;
+let messagesUsed = 0;
+let limitReachedShown = false;
+
+// --- Voz gratuita del navegador (plan free) ---
+let selectedVoice = null;
+function pickSpanishVoice() {
+  const voices = speechSynthesis.getVoices();
+  selectedVoice = voices.find(v => v.lang.startsWith('es')) || voices[0] || null;
+}
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = pickSpanishVoice;
+  pickSpanishVoice();
+}
+
+function speak(text, onStart, onEnd) {
+  if (!voiceToggle.checked || !('speechSynthesis' in window)) { if (onEnd) onEnd(); return; }
+  speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  if (selectedVoice) utter.voice = selectedVoice;
+  utter.rate = 0.95;
+  utter.pitch = 1.0;
+  utter.onstart = () => { if (onStart) onStart(); };
+  utter.onend = () => { if (onEnd) onEnd(); };
+  utter.onerror = () => { if (onEnd) onEnd(); };
+  speechSynthesis.speak(utter);
+}
+
+// --- Pantalla de precios ---
+function openPricing() { pricingModal.style.display = 'flex'; }
+if (new URLSearchParams(window.location.search).get('abrirPrecios') === 'true') {
+  // Se abrirá después del login/consentimiento si aplica, para no tapar esos pasos
+  window.addEventListener('load', () => setTimeout(openPricing, 400));
+}
+closePricing.addEventListener('click', () => { pricingModal.style.display = 'none'; });
+subscribeBtn.addEventListener('click', () => {
+  alert('(Prototipo) Aquí se conectaría con Stripe Checkout para procesar el pago real — pendiente Fase C de la guía de implementación.');
+});
+// El botón "Ver Premium" se crea dinámicamente dentro del aviso de límite alcanzado
+chat.parentElement.addEventListener('click', (e) => {
+  if (e.target.classList.contains('upsell')) openPricing();
+});
+appContainer.classList.add('blurred');
+
+// Al abrir la página, revisa si ya hay una sesión activa (evita pedir login de nuevo)
+(async () => {
+  const { data } = await supabaseClient.auth.getSession();
+  if (data?.session?.user) {
+    currentUser = data.session.user;
+    consentModal.style.display = 'none';
+    authModal.style.display = 'none';
+    appContainer.classList.remove('blurred');
+    await loadDailyUsageFromDB();
+  }
+})();
+acceptBtn.addEventListener('click', () => {
+  consentModal.style.display = 'none';
+  authModal.style.display = 'flex'; // después de aceptar, se pide cuenta real
+});
+
+// --- Supabase: conexión real ---
+const supabaseClient = window.supabase.createClient(
+  'https://dnopuyvtiufwdnkuymab.supabase.co',
+  'sb_publishable_mFVSpg_2l8TeKSRbQwAczg_kz8vpiLF'
+);
+
+const authModal = document.getElementById('authModal');
+const authTitle = document.getElementById('authTitle');
+const authEmail = document.getElementById('authEmail');
+const authPassword = document.getElementById('authPassword');
+const authSubmit = document.getElementById('authSubmit');
+const authToggle = document.getElementById('authToggle');
+const authError = document.getElementById('authError');
+let isSignUpMode = true;
+let currentUser = null;
+
+authToggle.addEventListener('click', () => {
+  isSignUpMode = !isSignUpMode;
+  authTitle.textContent = isSignUpMode ? 'Crea tu cuenta' : 'Inicia sesión';
+  authSubmit.textContent = isSignUpMode ? 'Crear cuenta y entrar' : 'Entrar';
+  authToggle.textContent = isSignUpMode ? 'Ya tengo cuenta, iniciar sesión' : '¿Nuevo aquí? Crear cuenta';
+  authError.textContent = '';
+});
+
+authSubmit.addEventListener('click', async () => {
+  const email = authEmail.value.trim();
+  const password = authPassword.value;
+  authError.textContent = '';
+  if (!email || password.length < 6) {
+    authError.textContent = 'Escribe un correo válido y una contraseña de al menos 6 caracteres.';
+    return;
+  }
+  authSubmit.disabled = true;
+  authSubmit.textContent = 'Un momento...';
+
+  try {
+    let result;
+    if (isSignUpMode) {
+      result = await supabaseClient.auth.signUp({ email, password });
+    } else {
+      result = await supabaseClient.auth.signInWithPassword({ email, password });
+    }
+    if (result.error) throw result.error;
+
+    currentUser = result.data.user;
+
+    // Registrar consentimiento expreso (LFPDPPP) — ver 17_Aviso_de_Privacidad.md
+    if (currentUser) {
+      await supabaseClient.from('consent_log').insert({ user_id: currentUser.id, version_aviso: '1.0' });
+      await supabaseClient.from('profiles').upsert({ id: currentUser.id, email: currentUser.email });
+    }
+
+    authModal.style.display = 'none';
+    appContainer.classList.remove('blurred');
+    await loadDailyUsageFromDB();
+    input.focus();
+  } catch (err) {
+    console.error('Error de autenticación:', err);
+    authError.textContent = 'Error real: ' + (err.message || JSON.stringify(err));
+  } finally {
+    authSubmit.disabled = false;
+    authSubmit.textContent = isSignUpMode ? 'Crear cuenta y entrar' : 'Entrar';
+  }
+});
+
+// Carga el uso real del día desde la base de datos, no de una variable local
+async function loadDailyUsageFromDB() {
+  if (!currentUser) return;
+  const today = new Date().toISOString().split('T')[0];
+  const { data } = await supabaseClient
+    .from('daily_usage')
+    .select('messages_used')
+    .eq('user_id', currentUser.id)
+    .eq('date', today)
+    .maybeSingle();
+  messagesUsed = data?.messages_used || 0;
+  updateLimitNote();
+  if (messagesUsed >= DAILY_LIMIT) showLimitReached();
+}
+
+// Guarda cada mensaje usado en la base de datos real (upsert por día)
+async function saveDailyUsageToDB() {
+  if (!currentUser) return;
+  const today = new Date().toISOString().split('T')[0];
+  await supabaseClient.from('daily_usage').upsert(
+    { user_id: currentUser.id, date: today, messages_used: messagesUsed },
+    { onConflict: 'user_id,date' }
+  );
+}
+
+// --- Botón de ayuda/recursos, accesible siempre, sin importar el plan ---
+helpFab.addEventListener('click', () => { resourcesModal.style.display = 'flex'; });
+closeResources.addEventListener('click', () => { resourcesModal.style.display = 'none'; });
+
+// Al tocar una línea de emergencia, se despliega su descripción empática
+document.querySelectorAll('.resource-item.emergency').forEach(item => {
+  const detailText = item.getAttribute('data-detail');
+  const expandDiv = document.createElement('div');
+  expandDiv.className = 'expand-detail';
+  expandDiv.textContent = detailText;
+  item.appendChild(expandDiv);
+  item.addEventListener('click', () => { item.classList.toggle('expanded'); });
+});
+
+// --- Plan de Seguridad Personalizado ---
+// En producción esto abriría un flujo guiado dedicado; en el prototipo
+// se simula iniciando la conversación con un mensaje que arranca el proceso.
+safetyPlanBtn.addEventListener('click', () => {
+  input.value = 'Me gustaría crear mi plan de seguridad personal';
+  sendMessage();
+});
+
+// --- Contador de límite diario ---
+function updateLimitNote() {
+  const restantes = DAILY_LIMIT - messagesUsed;
+  limitNote.textContent = restantes > 0
+    ? `Prototipo visual — plan gratuito: ${restantes} de ${DAILY_LIMIT} mensajes restantes hoy`
+    : `Prototipo visual — plan gratuito: límite diario alcanzado`;
+}
+updateLimitNote();
+
+function showLimitReached() {
+  if (limitReachedShown) return;
+  limitReachedShown = true;
+  const div = document.createElement('div');
+  div.className = 'limit-reached';
+  div.innerHTML = `Llegaste a tu límite de ${DAILY_LIMIT} mensajes de hoy. Vuelve mañana, o pasa a Premium para conversación ilimitada.<br><span class="upsell">Ver Premium</span>`;
+  chat.parentElement.insertBefore(div, limitNote);
+  input.disabled = true;
+  sendBtn.disabled = true;
+}
+
+const SYSTEM_PROMPT = `Eres un asistente de apoyo emocional. Tu rol NO es el de un psicólogo humano,
+y debes recordarlo activamente durante la conversación, sin repetirlo de forma robótica en cada mensaje.
+
+IDENTIDAD Y TONO
+- Adopta un enfoque rogeriano: escucha activa, empatía incondicional, validación emocional genuina antes que nada.
+- Tono cálido, cercano, sin tecnicismos clínicos innecesarios.
+- Nunca minimices lo que la persona siente ni apresures a "solucionar" antes de haber validado.
+- Este es un chat: respuestas breves, 3-5 líneas máximo, nunca un ensayo.
+
+LO QUE SÍ HACES
+- Escuchas y reflejas lo que la persona expresa, sin interpretar de más.
+- Ofreces técnicas psicológicas guiadas (respiración, grounding, reestructuración cognitiva básica)
+  SOLO cuando la persona ya se sintió escuchada, no como primera respuesta.
+- Haces preguntas abiertas, máximo una por respuesta.
+- Recuerdas, cada cierto número de interacciones (no en cada mensaje), que eres un apoyo temporal.
+
+LO QUE NUNCA HACES
+- Nunca das un diagnóstico clínico ni confirmas ni descartas diagnósticos que la persona sugiera.
+- Nunca recetas ni sugieres medicación.
+- Nunca finges ser un humano ni una autoridad clínica.
+- Nunca das consejos de vida definitivos — ayudas a que la persona explore, no decides por ella.
+- Solo hablas de temas de salud emocional/mental; si te preguntan algo totalmente ajeno
+  (clima, tarea, programación, etc.), rediriges con amabilidad de vuelta al espacio de apoyo.
+
+PROTOCOLO DE CRISIS (prioridad máxima, anula todo lo demás)
+- Si detectas señales de ideación suicida, autolesión o riesgo hacia terceros, interrumpe el flujo normal.
+- Responde con calma, sin juicio, validando el dolor sin reforzar el pensamiento de crisis.
+- Antepone SIEMPRE de forma clara y visible: Línea de la Vida, 800-911-2000 (México, 24/7). Si hay señales de peligro físico inmediato (no solo malestar emocional), menciona también el 911 como opción para atención presencial urgente, aclarando la diferencia: la Línea de la Vida es orientación telefónica, el 911 moviliza ayuda física en el lugar.
+- No cierres la conversación de golpe — mantente presente mientras se ofrece la ayuda humana.
+- Nunca prometas confidencialidad absoluta.
+
+PLAN DE SEGURIDAD PERSONALIZADO
+- Si la persona pide crear su "plan de seguridad", guíala de forma conversacional
+  (una pregunta a la vez, nunca como formulario) por estos 6 puntos: 1) señales de
+  alerta propias, 2) estrategias que puede hacer sola, 3) personas/lugares que la
+  distraen, 4) personas a quienes puede pedir ayuda directamente, 5) profesionales
+  y líneas de contacto, 6) cómo hacer su entorno más seguro (con mucho tacto).
+- Al terminar, resume el plan completo de forma clara para que lo pueda guardar.`;
+
+function addMessage(text, role) {
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  if (role === 'ai' && (text.includes('800-911-2000') || text.includes('911'))) {
+    div.classList.add('crisis');
+  }
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+  return div;
+}
+
+function showTyping() {
+  const div = document.createElement('div');
+  div.className = 'typing';
+  div.id = 'typingIndicator';
+  div.innerHTML = '<span></span><span></span><span></span>';
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typingIndicator');
+  if (el) el.remove();
+}
+
+function animateTalking(text, fallbackDurationMs) {
+  const stop = () => {
+    mouth.classList.remove('talking');
+    statusPill.textContent = 'escuchando';
+  };
+  mouth.classList.add('talking');
+  statusPill.textContent = 'hablando';
+
+  if (voiceToggle.checked && 'speechSynthesis' in window) {
+    speak(text, null, stop); // la boca se detiene justo cuando termina de hablar de verdad
+  } else {
+    setTimeout(stop, fallbackDurationMs);
+  }
+}
+
+async function sendMessage() {
+  const text = input.value.trim();
+  if (!text) return;
+  if (messagesUsed >= DAILY_LIMIT) { showLimitReached(); return; }
+
+  messagesUsed++;
+  updateLimitNote();
+  saveDailyUsageToDB(); // guarda el uso real en tu base de datos, no solo en el navegador
+
+  addMessage(text, 'user');
+  input.value = '';
+  sendBtn.disabled = true;
+  showTyping();
+  statusPill.textContent = 'pensando';
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 300,
+        system: [
+          {
+            type: "text",
+            text: SYSTEM_PROMPT,
+            cache_control: { type: "ephemeral" } // ahorra hasta 90% en cada llamada repetida
+          }
+        ],
+        messages: [{ role: "user", content: text }]
+      })
+    });
+    const data = await response.json();
+    const reply = data.content.find(b => b.type === "text")?.text || "Estoy aquí contigo. ¿Puedes contarme un poco más?";
+
+    removeTyping();
+    addMessage(reply, 'ai');
+    animateTalking(reply, Math.min(reply.length * 45, 4000));
+    if (messagesUsed >= DAILY_LIMIT) showLimitReached();
+  } catch (err) {
+    removeTyping();
+    addMessage("(Prototipo) No se pudo conectar a la IA en este entorno de vista previa — en producción esta respuesta vendría del modelo.", 'ai');
+    statusPill.textContent = 'escuchando';
+  } finally {
+    sendBtn.disabled = false;
+  }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+</script>
+
+</body>
+</html>

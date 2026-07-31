@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Refugio — Un espacio para pensar, no para curarte solo</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #F7F3EC;
+    --sand: #E8E4DD;
+    --olive: #7C8B6E;
+    --olive-deep: #5F6C53;
+    --blue: #6E8B99;
+    --ink: #3A3A38;
+    --ink-soft: #6B6862;
+    --white: #FFFDFB;
+  }
+
+  body {
+    font-family: 'Karla', sans-serif;
+    background: linear-gradient(180deg, var(--sand) 0%, var(--cream) 55%);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .landing {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+  }
+
+  .icon-mark {
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 18px;
+    background: var(--white);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    box-shadow: 0 8px 24px rgba(58,58,56,0.08);
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 340px;
+    margin: 0 auto 32px;
+  }
+
+  .cta-btn {
+    display: inline-block;
+    background: var(--olive);
+    color: var(--white);
+    border: none;
+    border-radius: 24px;
+    padding: 16px 40px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 10px 30px rgba(124,139,110,0.25);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .cta-btn:hover { background: var(--olive-deep); transform: translateY(-1px); }
+
+  .trust-line {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.02em;
+  }
+
+  .features {
+    margin-top: 56px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    text-align: left;
+  }
+
+  .feature-item {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 4px 16px rgba(58,58,56,0.05);
+  }
+
+  .feature-item .emoji { font-size: 20px; line-height: 1; }
+  .feature-item .text-wrap .title { font-weight: 600; font-size: 13.5px; color: var(--ink); margin-bottom: 2px; }
+  .feature-item .text-wrap .desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+
+  footer {
+    margin-top: 48px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<div class="landing">
+  <div class="icon-mark">🌿</div>
+  <h1>Un espacio para pensar,<br>no para curarte solo</h1>
+  <p class="subtitle">A veces solo necesitas que alguien te escuche sin juzgarte, sin esperar semanas, sin miedo a lo que piensen de ti. Refugio está aquí para eso — las veces que lo necesites.</p>
+
+  <a href="index.html" class="cta-btn">Entrar a mi espacio</a>
+  <div class="trust-line">Gratis para empezar · Privado · Sin anuncios, nunca</div>
+
+  <div class="features">
+    <div class="feature-item">
+      <div class="emoji">💬</div>
+      <div class="text-wrap">
+        <div class="title">Escucha activa, sin juicio</div>
+        <div class="desc">Un espacio para desahogarte y pensar con más claridad, a tu ritmo.</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="emoji">🛡️</div>
+      <div class="text-wrap">
+        <div class="title">Ayuda real siempre a la mano</div>
+        <div class="desc">Recursos de crisis y un directorio de apoyo profesional gratuito en México, un toque de distancia.</div>
+      </div>
+    </div>
+    <div class="feature-item">
+      <div class="emoji">🔒</div>
+      <div class="text-wrap">
+        <div class="title">Lo que hablas aquí, se queda aquí</div>
+        <div class="desc">Tu información no se comparte ni se vende. Nunca.</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Refugio es un espacio de apoyo emocional con inteligencia artificial.<br>
+    No reemplaza el acompañamiento de un psicólogo humano.
+  </footer>
+</div>
+
+</body>
+</html>
