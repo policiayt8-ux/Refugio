@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Refugio — Prototipo</title>
+<title>Refugio — Apoyo emocional con IA</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Karla:wght@400;500;600&display=swap');
 
@@ -18,6 +18,7 @@
     --ink: #2B2E33;
     --ink-soft: #6B7280;
     --white: #FFFFFF;
+    --danger: #B5533C;
   }
 
   body {
@@ -41,6 +42,7 @@
     display: flex;
     flex-direction: column;
     height: 780px;
+    position: relative;
   }
 
   .header {
@@ -64,7 +66,6 @@
     margin-top: 4px;
   }
 
-  /* Avatar */
   .avatar-stage {
     background: var(--sand);
     display: flex;
@@ -78,17 +79,17 @@
     height: 140px;
   }
 
-  .face-bg { fill: #DDD3C0; }
-  .face { fill: #EFC9A0; }
-  .hair { fill: var(--olive-deep); }
-  .eye { fill: var(--ink); animation: blink 4.5s infinite; transform-origin: center; }
+  /* Avatar mejorado */
+  .face-bg { fill: #E8DDD0; }
+  .face { fill: #F5D6B8; }
+  .hair { fill: #4A3729; }
+  .eye { fill: #2C1810; animation: blink 4.5s infinite; transform-origin: center; }
   .eye.right { animation-delay: 0.05s; }
-  .mouth {
-    fill: #A65D4E;
-    transform-origin: center;
-    transition: transform 0.09s ease-in-out;
-  }
+  .glasses { fill: none; stroke: #5A4A3A; stroke-width: 2.5; }
+  .glasses-lens { fill: rgba(255,255,255,0.15); stroke: #5A4A3A; stroke-width: 1.5; }
+  .mouth { fill: #B5654E; transform-origin: center; transition: transform 0.09s; }
   .mouth.talking { animation: talk 0.32s ease-in-out infinite; }
+  .lab-coat { fill: #F0F4F8; stroke: #D0D8E0; stroke-width: 1.5; }
 
   @keyframes blink {
     0%, 92%, 100% { transform: scaleY(1); }
@@ -109,7 +110,6 @@
     letter-spacing: 0.02em;
   }
 
-  /* Chat */
   .chat {
     flex: 1;
     overflow-y: auto;
@@ -126,6 +126,7 @@
     border-radius: 16px;
     font-size: 14px;
     line-height: 1.5;
+    word-wrap: break-word;
   }
 
   .msg.ai {
@@ -140,6 +141,12 @@
     color: var(--white);
     align-self: flex-end;
     border-bottom-right-radius: 4px;
+  }
+
+  .msg.ai.crisis {
+    background: #FBEFE4;
+    border: 1.5px solid #D9A26C;
+    font-weight: 500;
   }
 
   .typing {
@@ -185,6 +192,7 @@
     outline: none;
   }
   .input-bar input:focus { border-color: var(--olive); }
+  .input-bar input:disabled { background: #F0F0F0; cursor: not-allowed; }
 
   .input-bar button {
     background: var(--olive);
@@ -198,7 +206,7 @@
     cursor: pointer;
     transition: background 0.15s;
   }
-  .input-bar button:hover { background: var(--olive-deep); }
+  .input-bar button:hover:not(:disabled) { background: var(--olive-deep); }
   .input-bar button:disabled { background: var(--ink-soft); cursor: not-allowed; }
 
   .limit-note {
@@ -208,7 +216,7 @@
     padding: 0 16px 14px;
   }
 
-  /* Modal de consentimiento */
+  /* Modales */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -218,6 +226,7 @@
     justify-content: center;
     z-index: 100;
     padding: 20px;
+    backdrop-filter: blur(4px);
   }
 
   .modal-box {
@@ -227,13 +236,10 @@
     max-width: 380px;
     text-align: center;
     box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+    position: relative;
   }
 
-  .modal-box .icon {
-    font-size: 30px;
-    margin-bottom: 10px;
-  }
-
+  .modal-box .icon { font-size: 30px; margin-bottom: 10px; }
   .modal-box h2 {
     font-family: 'Fraunces', serif;
     font-size: 19px;
@@ -241,16 +247,13 @@
     margin-bottom: 14px;
     color: var(--ink);
   }
-
   .modal-box p {
     font-size: 13.5px;
     line-height: 1.65;
     color: var(--ink-soft);
     margin-bottom: 22px;
   }
-
   .modal-box p strong { color: var(--ink); }
-
   .modal-box button {
     background: var(--olive);
     color: var(--white);
@@ -266,146 +269,29 @@
   }
   .modal-box button:hover { background: var(--olive-deep); }
 
-  .app.blurred { filter: blur(4px); pointer-events: none; }
-
-  /* Límite alcanzado */
-  .limit-reached {
-    text-align: center;
-    padding: 18px 20px;
-    background: var(--sand);
-    border-radius: 16px;
-    margin: 4px 20px 0;
-    font-size: 13px;
-    color: var(--ink);
-    line-height: 1.6;
-  }
-  .limit-reached .upsell {
-    display: inline-block;
-    margin-top: 8px;
-    background: var(--olive);
-    color: var(--white);
-    padding: 8px 18px;
-    border-radius: 16px;
-    font-weight: 600;
-    font-size: 12.5px;
-    cursor: pointer;
-  }
-  .msg.ai.crisis {
-    background: #FBEFE4;
-    border: 1.5px solid #D9A26C;
-    font-weight: 500;
-  }
-  .voice-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 10px;
-    font-size: 11.5px;
-    color: var(--ink-soft);
-    cursor: pointer;
-  }
-  .voice-toggle input { accent-color: var(--olive); cursor: pointer; }
-
-  /* Botón de ayuda siempre accesible */
-  .help-fab {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: var(--white);
-    border: 1.5px solid var(--sand);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  }
-  .help-fab:hover { border-color: var(--olive); }
-
-  .resources-box {
-    background: var(--white);
-    border-radius: 24px;
-    padding: 26px 22px;
-    max-width: 360px;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.2);
-  }
-  .resources-box h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 18px;
-    font-weight: 500;
-    margin-bottom: 4px;
-  }
-  .resources-box .sub2 { font-size: 12px; color: var(--ink-soft); margin-bottom: 16px; }
-  .resources-box h3 {
-    font-size: 12.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: var(--olive-deep);
-    margin: 16px 0 8px;
-  }
-  .resource-item {
-    background: var(--cream);
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 8px;
-    font-size: 13px;
-  }
-  .resource-item .name { font-weight: 600; color: var(--ink); }
-  .resource-item .detail { color: var(--ink-soft); font-size: 12px; }
-  .resource-item.emergency { background: #FBEFE4; border: 1px solid #D9A26C; cursor: pointer; }
-  .resource-item .expand-detail {
-    display: none;
-    font-size: 12px;
-    color: var(--ink-soft);
-    line-height: 1.5;
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(217,162,108,0.3);
-  }
-  .resource-item.expanded .expand-detail { display: block; }
-  .gentle-note {
-    font-size: 12px;
-    color: var(--ink-soft);
-    line-height: 1.6;
-    background: var(--cream);
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 6px;
-  }
-  .resources-box .close-pricing { margin-top: 14px; }
-
-  /* Botón de plan de seguridad */
-  .safety-plan-btn {
-    display: block;
-    width: calc(100% - 40px);
-    margin: 0 20px 12px;
-    background: var(--cream);
-    border: 1.5px solid var(--sand);
-    color: var(--ink);
-    border-radius: 14px;
-    padding: 10px;
-    font-family: 'Karla', sans-serif;
-    font-size: 12.5px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
-  }
-  .safety-plan-btn:hover { border-color: var(--olive); }
-
-  /* Pantalla de precios */
+  /* Pricing modal */
   .pricing-box {
     background: var(--white);
     border-radius: 24px;
     padding: 28px 24px;
     max-width: 380px;
     box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
   }
+  .pricing-box .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    padding: 4px 8px;
+  }
+  .pricing-box .close-btn:hover { color: var(--ink); }
   .pricing-box h2 {
     font-family: 'Fraunces', serif;
     font-size: 19px;
@@ -443,35 +329,6 @@
   .plan-card .plan-price span { font-size: 12px; font-weight: 400; color: var(--ink-soft); }
   .plan-card ul { list-style: none; font-size: 12.5px; color: var(--ink-soft); line-height: 1.9; }
   .plan-card ul li::before { content: "· "; color: var(--olive); font-weight: 700; }
-  .pricing-box .close-pricing {
-    display: block;
-    margin: 10px auto 0;
-    background: none;
-    border: none;
-    color: var(--ink-soft);
-    font-size: 12.5px;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-  .pricing-box .subscribe-btn {
-    width: 100%;
-    background: var(--olive);
-    color: var(--white);
-    border: none;
-    border-radius: 20px;
-    padding: 12px;
-    font-family: 'Karla', sans-serif;
-    font-weight: 600;
-    font-size: 13.5px;
-    cursor: pointer;
-  }
-  .donate-note {
-    text-align: center;
-    font-size: 11px;
-    color: var(--ink-soft);
-    margin-top: 14px;
-  }
-  .donate-note a { color: var(--blue); }
 
   .tier-grid {
     display: grid;
@@ -485,11 +342,22 @@
     padding: 10px 8px;
     text-align: center;
     position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tier-option:hover { border-color: var(--blue); }
+  .tier-option.selected {
+    border-color: var(--olive);
+    background: rgba(62,92,118,0.08);
+    box-shadow: 0 0 0 2px var(--olive);
   }
   .tier-option.best {
     border-color: var(--olive);
     background: rgba(124,139,110,0.08);
     transform: scale(1.03);
+  }
+  .tier-option.best.selected {
+    box-shadow: 0 0 0 2px var(--olive), 0 4px 12px rgba(62,92,118,0.2);
   }
   .tier-badge {
     position: absolute;
@@ -508,11 +376,316 @@
   .tier-price { font-size: 18px; font-weight: 600; color: var(--ink); }
   .tier-perday { font-size: 10.5px; color: var(--ink-soft); margin-top: 2px; }
   .tier-option.best .tier-perday { color: var(--olive-deep); font-weight: 600; }
+
+  .subscribe-btn {
+    width: 100%;
+    background: var(--olive);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    padding: 12px;
+    font-family: 'Karla', sans-serif;
+    font-weight: 600;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .subscribe-btn:hover:not(:disabled) { background: var(--olive-deep); }
+  .subscribe-btn:disabled { background: var(--ink-soft); cursor: not-allowed; }
+
+  .donate-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+  }
+  .donate-note a { color: var(--blue); }
+
+  .close-pricing {
+    display: block;
+    margin: 10px auto 0;
+    background: none;
+    border: none;
+    color: var(--ink-soft);
+    font-size: 12.5px;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  .close-pricing:hover { color: var(--ink); }
+
+  /* Resources modal */
+  .resources-box {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 26px 22px;
+    max-width: 360px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  .resources-box .close-btn {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    cursor: pointer;
+    color: var(--ink-soft);
+    padding: 4px 8px;
+  }
+  .resources-box .close-btn:hover { color: var(--ink); }
+  .resources-box h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .resources-box .sub2 { font-size: 12px; color: var(--ink-soft); margin-bottom: 16px; }
+  .resources-box h3 {
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--olive-deep);
+    margin: 16px 0 8px;
+  }
+  .resource-item {
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .resource-item .name { font-weight: 600; color: var(--ink); }
+  .resource-item .detail { color: var(--ink-soft); font-size: 12px; }
+  .resource-item.emergency {
+    background: #FBEFE4;
+    border: 1px solid #D9A26C;
+    cursor: pointer;
+  }
+  .resource-item .expand-detail {
+    display: none;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(217,162,108,0.3);
+  }
+  .resource-item.expanded .expand-detail { display: block; }
+  .gentle-note {
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    background: var(--cream);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 6px;
+  }
+
+  .help-fab {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--white);
+    border: 1.5px solid var(--sand);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .help-fab:hover { border-color: var(--olive); }
+
+  .safety-plan-btn {
+    display: block;
+    width: calc(100% - 40px);
+    margin: 0 20px 12px;
+    background: var(--cream);
+    border: 1.5px solid var(--sand);
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 10px;
+    font-family: 'Karla', sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .safety-plan-btn:hover { border-color: var(--olive); }
+
+  .voice-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .voice-toggle input { accent-color: var(--olive); cursor: pointer; }
+
+  .limit-reached {
+    text-align: center;
+    padding: 18px 20px;
+    background: var(--sand);
+    border-radius: 16px;
+    margin: 4px 20px 0;
+    font-size: 13px;
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .limit-reached .upsell {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--olive);
+    color: var(--white);
+    padding: 8px 18px;
+    border-radius: 16px;
+    font-weight: 600;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .limit-reached .upsell:hover { background: var(--olive-deep); }
+
+  /* Pantalla de bienvenida */
+  .welcome-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(44,66,87,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .welcome-overlay.active { display: flex; }
+  .welcome-box {
+    background: var(--white);
+    border-radius: 32px;
+    padding: 40px 32px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+    border: 1px solid var(--sand);
+  }
+  .welcome-box .avatar-mini {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--sand);
+    margin: 0 auto 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    color: var(--olive-deep);
+  }
+  .welcome-box h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--olive-deep);
+    margin-bottom: 8px;
+  }
+  .welcome-box .tagline {
+    color: var(--ink-soft);
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+  .welcome-box .privacy-note {
+    color: var(--blue);
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+  .welcome-box .btn-primary {
+    background: var(--olive);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 60px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s;
+    margin-bottom: 12px;
+  }
+  .welcome-box .btn-primary:hover { background: var(--olive-deep); }
+  .welcome-box .btn-secondary {
+    background: transparent;
+    color: var(--olive);
+    border: 2px solid var(--sand);
+    padding: 12px;
+    border-radius: 60px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+  }
+  .welcome-box .btn-secondary:hover { border-color: var(--olive); }
+  .welcome-box .plan-note {
+    color: #A0B0BE;
+    font-size: 12px;
+    margin-top: 20px;
+  }
+  .welcome-box .plan-note span { color: var(--olive); font-weight: 500; }
+
+  /* Auth styles */
+  .auth-input {
+    width: 100%;
+    padding: 11px 14px;
+    border-radius: 14px;
+    border: 1px solid var(--sand);
+    margin-bottom: 10px;
+    font-family: 'Karla', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .auth-input:focus { border-color: var(--olive); }
+  .auth-error { color: var(--danger); font-size: 12px; margin-top: 10px; }
+  .auth-toggle {
+    background: none;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    margin-top: 10px;
+    box-shadow: none;
+    width: auto;
+    padding: 8px;
+  }
+  .auth-toggle:hover { color: var(--ink); background: none; }
 </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <body>
 
+<!-- ===== WELCOME OVERLAY ===== -->
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-box">
+    <div class="avatar-mini">🧠</div>
+    <h1>Bienvenid@ a Refugio</h1>
+    <div class="tagline">Un espacio para pensar, no para curarte solo</div>
+    <div class="privacy-note">🔒 Lo que hablas aquí, se queda aquí</div>
+    <button class="btn-primary" id="startChatBtn">💬 Empezar a escribir</button>
+    <button class="btn-secondary" id="welcomeResourcesBtn">📞 Ver recursos de apoyo</button>
+    <div class="plan-note">Plan Gratis: <span>6 mensajes al día</span> · Sin compromiso</div>
+  </div>
+</div>
+
+<!-- ===== CONSENT MODAL ===== -->
 <div class="modal-overlay" id="consentModal">
   <div class="modal-box">
     <div class="icon">🌿</div>
@@ -522,8 +695,10 @@
   </div>
 </div>
 
+<!-- ===== PRICING MODAL ===== -->
 <div class="modal-overlay" id="pricingModal" style="display:none;">
   <div class="pricing-box">
+    <button class="close-btn" id="closePricingBtn">✕</button>
     <h2>Elige tu espacio</h2>
     <div class="sub2">Sin anuncios, nunca. Cancela cuando quieras.</div>
 
@@ -538,22 +713,22 @@
     </div>
 
     <div class="tier-grid">
-      <div class="tier-option" data-tier="dia">
+      <div class="tier-option" data-tier="dia" data-price="15" data-label="1 día">
         <div class="tier-label">1 día</div>
         <div class="tier-price">$15</div>
         <div class="tier-perday">$15.00/día</div>
       </div>
-      <div class="tier-option" data-tier="3dias">
+      <div class="tier-option" data-tier="3dias" data-price="30" data-label="3 días">
         <div class="tier-label">3 días</div>
         <div class="tier-price">$30</div>
         <div class="tier-perday">$10.00/día</div>
       </div>
-      <div class="tier-option" data-tier="semana">
+      <div class="tier-option" data-tier="semana" data-price="60" data-label="1 semana">
         <div class="tier-label">1 semana</div>
         <div class="tier-price">$60</div>
         <div class="tier-perday">$8.57/día</div>
       </div>
-      <div class="tier-option best" data-tier="mes">
+      <div class="tier-option best" data-tier="mes" data-price="129" data-label="1 mes">
         <div class="tier-badge">Mejor valor</div>
         <div class="tier-label">1 mes</div>
         <div class="tier-price">$129</div>
@@ -569,31 +744,75 @@
         <li>Memoria de tus conversaciones</li>
         <li>Gráficos semanales de estado de ánimo</li>
       </ul>
-      <button class="subscribe-btn" id="subscribeBtn">Continuar con 1 mes — $129</button>
+      <button class="subscribe-btn" id="subscribeBtn" disabled>Selecciona un plan</button>
     </div>
 
     <div class="donate-note">¿Prefieres apoyar sin suscribirte? <a href="#">Invítame un café</a></div>
-    <button class="close-pricing" id="closePricing">Seguir con el plan gratis</button>
+    <button class="close-pricing" id="closePricingText">Seguir con el plan gratis</button>
   </div>
 </div>
 
+<!-- ===== AUTH MODAL ===== -->
 <div class="modal-overlay" id="authModal" style="display:none;">
   <div class="modal-box">
     <div class="icon">🔑</div>
     <h2 id="authTitle">Crea tu cuenta</h2>
     <p style="margin-bottom:14px;">Con una cuenta, tu límite de mensajes y tu progreso son tuyos de verdad — no se borran al cerrar la pestaña.</p>
-    <input type="email" id="authEmail" placeholder="Tu correo" style="width:100%; padding:11px 14px; border-radius:14px; border:1px solid var(--sand); margin-bottom:10px; font-family:'Karla',sans-serif; font-size:14px;">
-    <input type="password" id="authPassword" placeholder="Contraseña (mínimo 6 caracteres)" style="width:100%; padding:11px 14px; border-radius:14px; border:1px solid var(--sand); margin-bottom:14px; font-family:'Karla',sans-serif; font-size:14px;">
+    <input class="auth-input" type="email" id="authEmail" placeholder="Tu correo">
+    <input class="auth-input" type="password" id="authPassword" placeholder="Contraseña (mínimo 6 caracteres)">
     <button id="authSubmit">Crear cuenta y entrar</button>
-    <button id="authToggle" style="background:none; color:var(--ink-soft); text-decoration:underline; margin-top:10px; box-shadow:none;">Ya tengo cuenta, iniciar sesión</button>
-    <div id="authError" style="color:#B5533C; font-size:12px; margin-top:10px;"></div>
+    <button class="auth-toggle" id="authToggle">Ya tengo cuenta, iniciar sesión</button>
+    <div class="auth-error" id="authError"></div>
   </div>
 </div>
 
+<!-- ===== RESOURCES MODAL ===== -->
+<div class="modal-overlay" id="resourcesModal" style="display:none;">
+  <div class="resources-box">
+    <button class="close-btn" id="closeResourcesBtn">✕</button>
+    <h2>Ayuda y recursos</h2>
+    <div class="sub2">Siempre disponible, sin importar tu plan</div>
+    <div class="gentle-note">Si en algún momento sientes que necesitas más de lo que aquí puedes encontrar, estas líneas están para ti. Toca cualquiera para saber más.</div>
+
+    <h3>Líneas de crisis 24/7 (gratuitas)</h3>
+    <div class="resource-item emergency" data-detail="Es un servicio nacional gratuito y confidencial. No necesitas estar seguro de nada para llamar — con que sientas que ya no puedes solo con esto, es razón suficiente.">
+      <div class="name">Línea de la Vida</div>
+      <div class="detail">800 911 2000</div>
+    </div>
+    <div class="resource-item emergency" data-detail="Orientación psicológica telefónica, con personas reales capacitadas para escucharte sin juzgarte.">
+      <div class="name">SAPTEL</div>
+      <div class="detail">55 5259 8121</div>
+    </div>
+    <div class="resource-item emergency" data-detail="Atención ciudadana de la Ciudad de México, también disponible para orientación en momentos difíciles.">
+      <div class="name">Consejo Ciudadano CDMX</div>
+      <div class="detail">55 5533 5533</div>
+    </div>
+    <div class="resource-item emergency" data-detail="Si hay un peligro inmediato para tu vida o la de alguien más, esta es la línea correcta.">
+      <div class="name">Emergencias — 911</div>
+      <div class="detail">911 (línea nacional)</div>
+    </div>
+
+    <h3>Terapia gratuita o de bajo costo</h3>
+    <div class="resource-item">
+      <div class="name">UNAM — Facultad de Psicología</div>
+      <div class="detail">Atención a distancia, sin costo</div>
+    </div>
+    <div class="resource-item">
+      <div class="name">DIF (tu alcaldía/municipio)</div>
+      <div class="detail">Centros de Desarrollo Comunitario</div>
+    </div>
+    <div class="resource-item">
+      <div class="name">Centros de Salud (SEDESA)</div>
+      <div class="detail">Consulta psicológica gratuita o cuota mínima</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
 <div class="app" id="appContainer">
   <div class="header">
     <button class="help-fab" id="helpFab" title="Ayuda y recursos">🆘</button>
-    <a href="perfil.html" class="help-fab" style="right:64px; text-decoration:none; display:flex; align-items:center; justify-content:center;" title="Mi perfil">👤</a>
+    <a href="perfil.html" class="help-fab" style="right:64px;" title="Mi perfil">👤</a>
     <h1>Refugio</h1>
     <div class="sub">Un espacio para pensar, no para curarte solo</div>
     <div class="status-pill" style="margin-top:10px; background:rgba(110,139,153,0.14); color:var(--blue);">Apoyo emocional con IA · No sustituye la atención psicológica profesional</div>
@@ -603,412 +822,579 @@
     </label>
   </div>
 
-  <div class="modal-overlay" id="resourcesModal" style="display:none;">
-    <div class="resources-box">
-      <h2>Ayuda y recursos</h2>
-      <div class="sub2">Siempre disponible, sin importar tu plan</div>
-      <div class="gentle-note">Si en algún momento sientes que necesitas más de lo que aquí puedes encontrar, estas líneas están para ti. Toca cualquiera para saber más.</div>
-
-      <h3>Líneas de crisis 24/7 (gratuitas)</h3>
-
-      <div class="resource-item emergency" data-detail="Es un servicio nacional gratuito y confidencial. No necesitas estar seguro de nada para llamar — con que sientas que ya no puedes solo con esto, es razón suficiente.">
-        <div class="name">Línea de la Vida</div>
-        <div class="detail">800 911 2000</div>
-      </div>
-
-      <div class="resource-item emergency" data-detail="Orientación psicológica telefónica, con personas reales capacitadas para escucharte sin juzgarte, cueste lo que cueste lo que estés viviendo.">
-        <div class="name">SAPTEL</div>
-        <div class="detail">55 5259 8121</div>
-      </div>
-
-      <div class="resource-item emergency" data-detail="Atención ciudadana de la Ciudad de México, también disponible para orientación en momentos difíciles.">
-        <div class="name">Consejo Ciudadano CDMX</div>
-        <div class="detail">55 5533 5533</div>
-      </div>
-
-      <div class="resource-item emergency" data-detail="Si hay un peligro inmediato para tu vida o la de alguien más, esta es la línea correcta — llegan a ayudarte en persona, no solo por teléfono.">
-        <div class="name">Emergencias — 911</div>
-        <div class="detail">911 (línea nacional de emergencias)</div>
-      </div>
-
-      <h3>Terapia gratuita o de bajo costo</h3>
-      <div class="resource-item">
-        <div class="name">UNAM — Facultad de Psicología</div>
-        <div class="detail">Atención a distancia, sin costo</div>
-      </div>
-      <div class="resource-item">
-        <div class="name">DIF (tu alcaldía/municipio)</div>
-        <div class="detail">Centros de Desarrollo Comunitario, costo bajo o gratuito</div>
-      </div>
-      <div class="resource-item">
-        <div class="name">Centros de Salud (SEDESA y equivalentes)</div>
-        <div class="detail">Consulta psicológica gratuita o cuota mínima</div>
-      </div>
-
-      <button class="close-pricing" id="closeResources" style="display:block; margin:14px auto 0; background:none; border:none; color:var(--ink-soft); font-size:12.5px; text-decoration:underline; cursor:pointer;">Cerrar</button>
-    </div>
-  </div>
-
   <div class="avatar-stage">
     <div style="display:flex; flex-direction:column; align-items:center;">
       <svg class="avatar" viewBox="0 0 200 200" id="avatarSvg">
+        <!-- Cabeza y cara -->
         <circle class="face-bg" cx="100" cy="105" r="72"/>
         <path class="hair" d="M 35 90 Q 30 30 100 28 Q 170 30 165 90 Q 150 55 100 55 Q 50 55 35 90 Z"/>
         <circle class="face" cx="100" cy="112" r="58"/>
+
+        <!-- Ojos -->
         <ellipse class="eye left" cx="80" cy="105" rx="5" ry="7"/>
         <ellipse class="eye right" cx="120" cy="105" rx="5" ry="7"/>
+
+        <!-- Cejas -->
         <path d="M 72 92 Q 80 87 88 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <path d="M 112 92 Q 120 87 128 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-        <ellipse class="mouth" id="mouth" cx="100" cy="138" rx="12" ry="4"/>
+
+        <!-- Lentes -->
+        <circle class="glasses-lens" cx="80" cy="105" r="16"/>
+        <circle class="glasses-lens" cx="120" cy="105" r="16"/>
+        <path class="glasses" d="M 96 105 L 104 105"/>
+        <path class="glasses" d="M 64 105 L 64 95 Q 64 88 72 88 L 88 88"/>
+        <path class="glasses" d="M 136 105 L 136 95 Q 136 88 128 88 L 112 88"/>
+
+        <!-- Boca (sonrisa suave) -->
+        <ellipse class="mouth" id="mouth" cx="100" cy="138" rx="10" ry="4"/>
+
+        <!-- Bata blanca (cuello) -->
+        <path class="lab-coat" d="M 70 165 L 60 200 L 140 200 L 130 165 Z"/>
+        <path d="M 90 165 L 100 175 L 110 165" stroke="#D0D8E0" stroke-width="1.5" fill="none"/>
       </svg>
       <div class="status-pill" id="statusPill">escuchando</div>
     </div>
   </div>
 
+  <div class="chat" id="chatContainer"></div>
+
   <button class="safety-plan-btn" id="safetyPlanBtn">🛡️ Crear mi plan de seguridad personal</button>
 
-  <div class="chat" id="chat">
-    <div class="msg ai">Hola, soy Refugio. Este es un espacio para desahogarte y pensar con más claridad. ¿Qué tienes en mente hoy?</div>
+  <div class="input-bar">
+    <input type="text" id="messageInput" placeholder="Escribe cómo te sientes..." disabled>
+    <button id="sendBtn" disabled>Enviar</button>
   </div>
 
-  <div class="input-bar">
-    <input type="text" id="userInput" placeholder="Escribe cómo te sientes..." maxlength="500">
-    <button id="sendBtn">Enviar</button>
-  </div>
-  <div class="limit-note">Prototipo visual — plan gratuito: 6 mensajes cada 24h</div>
+  <div class="limit-note" id="limitNote">Prototipo visual — plan gratuito: cargando...</div>
 </div>
 
+<!-- ===== JAVASCRIPT ===== -->
 <script>
-const chat = document.getElementById('chat');
-const input = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-const mouth = document.getElementById('mouth');
-const statusPill = document.getElementById('statusPill');
-const appContainer = document.getElementById('appContainer');
-const consentModal = document.getElementById('consentModal');
-const helpFab = document.getElementById('helpFab');
-const resourcesModal = document.getElementById('resourcesModal');
-const closeResources = document.getElementById('closeResources');
-const safetyPlanBtn = document.getElementById('safetyPlanBtn');
-const acceptBtn = document.getElementById('acceptBtn');
-const pricingModal = document.getElementById('pricingModal');
-const closePricing = document.getElementById('closePricing');
-const subscribeBtn = document.getElementById('subscribeBtn');
-const limitNote = document.querySelector('.limit-note');
-const voiceToggle = document.getElementById('voiceToggle');
+  // ============================
+  //  CONFIGURACIÓN
+  // ============================
+  const SUPABASE_URL = 'https://TU_PROYECTO.supabase.co'; // <-- CAMBIAR
+  const SUPABASE_ANON_KEY = 'TU_ANON_KEY'; // <-- CAMBIAR
 
-const DAILY_LIMIT = 6;
-let messagesUsed = 0;
-let limitReachedShown = false;
+  const DAILY_LIMIT = 6;
+  let currentUser = null;
+  let messagesHistory = [];
+  let isLimitReached = false;
+  let selectedTier = 'mes';
+  let consentGiven = false;
 
-// --- Voz gratuita del navegador (plan free) ---
-let selectedVoice = null;
-function pickSpanishVoice() {
-  const voices = speechSynthesis.getVoices();
-  selectedVoice = voices.find(v => v.lang.startsWith('es')) || voices[0] || null;
-}
-if ('speechSynthesis' in window) {
-  speechSynthesis.onvoiceschanged = pickSpanishVoice;
-  pickSpanishVoice();
-}
+  // ============================
+  //  SUPABASE CLIENT
+  // ============================
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-function speak(text, onStart, onEnd) {
-  if (!voiceToggle.checked || !('speechSynthesis' in window)) { if (onEnd) onEnd(); return; }
-  speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  if (selectedVoice) utter.voice = selectedVoice;
-  utter.rate = 0.95;
-  utter.pitch = 1.0;
-  utter.onstart = () => { if (onStart) onStart(); };
-  utter.onend = () => { if (onEnd) onEnd(); };
-  utter.onerror = () => { if (onEnd) onEnd(); };
-  speechSynthesis.speak(utter);
-}
+  // ============================
+  //  DOM REFS
+  // ============================
+  const $ = id => document.getElementById(id);
+  const chatContainer = $('chatContainer');
+  const messageInput = $('messageInput');
+  const sendBtn = $('sendBtn');
+  const limitNote = $('limitNote');
+  const statusPill = $('statusPill');
+  const mouth = document.getElementById('mouth');
 
-// --- Pantalla de precios ---
-function openPricing() { pricingModal.style.display = 'flex'; }
-if (new URLSearchParams(window.location.search).get('abrirPrecios') === 'true') {
-  // Se abrirá después del login/consentimiento si aplica, para no tapar esos pasos
-  window.addEventListener('load', () => setTimeout(openPricing, 400));
-}
-closePricing.addEventListener('click', () => { pricingModal.style.display = 'none'; });
-subscribeBtn.addEventListener('click', () => {
-  alert('(Prototipo) Aquí se conectaría con Stripe Checkout para procesar el pago real — pendiente Fase C de la guía de implementación.');
-});
-// El botón "Ver Premium" se crea dinámicamente dentro del aviso de límite alcanzado
-chat.parentElement.addEventListener('click', (e) => {
-  if (e.target.classList.contains('upsell')) openPricing();
-});
-appContainer.classList.add('blurred');
+  // Modales
+  const consentModal = $('consentModal');
+  const authModal = $('authModal');
+  const pricingModal = $('pricingModal');
+  const resourcesModal = $('resourcesModal');
+  const welcomeOverlay = $('welcomeOverlay');
 
-// Al abrir la página, revisa si ya hay una sesión activa (evita pedir login de nuevo)
-(async () => {
-  const { data } = await supabaseClient.auth.getSession();
-  if (data?.session?.user) {
-    currentUser = data.session.user;
-    consentModal.style.display = 'none';
-    authModal.style.display = 'none';
-    appContainer.classList.remove('blurred');
-    await loadDailyUsageFromDB();
+  // ============================
+  //  FUNCIONES DE UTILIDAD
+  // ============================
+  function addMessage(role, content, isCrisis = false) {
+    const msg = document.createElement('div');
+    msg.className = `msg ${role}`;
+    if (isCrisis) msg.classList.add('crisis');
+    msg.textContent = content;
+    chatContainer.appendChild(msg);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    if (role === 'ai') speakText(content);
   }
-})();
-acceptBtn.addEventListener('click', () => {
-  consentModal.style.display = 'none';
-  authModal.style.display = 'flex'; // después de aceptar, se pide cuenta real
-});
 
-// --- Supabase: conexión real ---
-const supabaseClient = window.supabase.createClient(
-  'https://dnopuyvtiufwdnkuymab.supabase.co',
-  'sb_publishable_mFVSpg_2l8TeKSRbQwAczg_kz8vpiLF'
-);
-
-const authModal = document.getElementById('authModal');
-const authTitle = document.getElementById('authTitle');
-const authEmail = document.getElementById('authEmail');
-const authPassword = document.getElementById('authPassword');
-const authSubmit = document.getElementById('authSubmit');
-const authToggle = document.getElementById('authToggle');
-const authError = document.getElementById('authError');
-let isSignUpMode = true;
-let currentUser = null;
-
-authToggle.addEventListener('click', () => {
-  isSignUpMode = !isSignUpMode;
-  authTitle.textContent = isSignUpMode ? 'Crea tu cuenta' : 'Inicia sesión';
-  authSubmit.textContent = isSignUpMode ? 'Crear cuenta y entrar' : 'Entrar';
-  authToggle.textContent = isSignUpMode ? 'Ya tengo cuenta, iniciar sesión' : '¿Nuevo aquí? Crear cuenta';
-  authError.textContent = '';
-});
-
-authSubmit.addEventListener('click', async () => {
-  const email = authEmail.value.trim();
-  const password = authPassword.value;
-  authError.textContent = '';
-  if (!email || password.length < 6) {
-    authError.textContent = 'Escribe un correo válido y una contraseña de al menos 6 caracteres.';
-    return;
+  function showTyping() {
+    const div = document.createElement('div');
+    div.className = 'typing';
+    div.id = 'typingIndicator';
+    div.innerHTML = '<span></span><span></span><span></span>';
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
   }
-  authSubmit.disabled = true;
-  authSubmit.textContent = 'Un momento...';
 
-  try {
-    let result;
-    if (isSignUpMode) {
-      result = await supabaseClient.auth.signUp({ email, password });
+  function hideTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+  }
+
+  function speakText(text) {
+    const voiceOn = document.getElementById('voiceToggle').checked;
+    if (!voiceOn || !window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'es-MX';
+    utterance.rate = 0.9;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function updateLimitDisplay(used) {
+    const remaining = Math.max(0, DAILY_LIMIT - used);
+    limitNote.textContent = `Prototipo visual — plan gratuito: ${remaining} de ${DAILY_LIMIT} mensajes restantes hoy`;
+    if (remaining <= 0) {
+      isLimitReached = true;
+      messageInput.disabled = true;
+      sendBtn.disabled = true;
+      showLimitReached();
     } else {
-      result = await supabaseClient.auth.signInWithPassword({ email, password });
+      isLimitReached = false;
+      messageInput.disabled = false;
+      sendBtn.disabled = false;
+      hideLimitReached();
     }
-    if (result.error) throw result.error;
+  }
 
-    currentUser = result.data.user;
+  function showLimitReached() {
+    const existing = document.querySelector('.limit-reached');
+    if (existing) return;
+    const div = document.createElement('div');
+    div.className = 'limit-reached';
+    div.id = 'limitReachedMsg';
+    div.innerHTML = `
+      <strong>📦 Límite de hoy alcanzado</strong><br>
+      <span style="font-size:12px;">Los mensajes gratuitos se renuevan mañana.</span>
+      <div class="upsell" id="upsellBtn">✨ Desbloquear mensajes ilimitados</div>
+    `;
+    chatContainer.appendChild(div);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    document.getElementById('upsellBtn').addEventListener('click', openPricing);
+  }
 
-    // Registrar consentimiento expreso (LFPDPPP) — ver 17_Aviso_de_Privacidad.md
-    if (currentUser) {
-      await supabaseClient.from('consent_log').insert({ user_id: currentUser.id, version_aviso: '1.0' });
-      await supabaseClient.from('profiles').upsert({ id: currentUser.id, email: currentUser.email });
-    }
+  function hideLimitReached() {
+    const el = document.getElementById('limitReachedMsg');
+    if (el) el.remove();
+  }
 
+  // ============================
+  //  MODALES
+  // ============================
+  function openPricing() {
+    pricingModal.style.display = 'flex';
+    document.querySelectorAll('.tier-option').forEach(el => el.classList.remove('selected'));
+    const mesOption = document.querySelector('.tier-option[data-tier="mes"]');
+    if (mesOption) mesOption.classList.add('selected');
+    selectedTier = 'mes';
+    updateSubscribeBtn();
+  }
+
+  function closePricing() {
+    pricingModal.style.display = 'none';
+  }
+
+  function openResources() {
+    resourcesModal.style.display = 'flex';
+  }
+
+  function closeResources() {
+    resourcesModal.style.display = 'none';
+  }
+
+  function openAuth() {
+    authModal.style.display = 'flex';
+  }
+
+  function closeAuth() {
     authModal.style.display = 'none';
-    appContainer.classList.remove('blurred');
-    await loadDailyUsageFromDB();
-    input.focus();
-  } catch (err) {
-    console.error('Error de autenticación:', err);
-    authError.textContent = 'Error real: ' + (err.message || JSON.stringify(err));
-  } finally {
-    authSubmit.disabled = false;
-    authSubmit.textContent = isSignUpMode ? 'Crear cuenta y entrar' : 'Entrar';
   }
-});
 
-// Carga el uso real del día desde la base de datos, no de una variable local
-async function loadDailyUsageFromDB() {
-  if (!currentUser) return;
-  const today = new Date().toISOString().split('T')[0];
-  const { data } = await supabaseClient
-    .from('daily_usage')
-    .select('messages_used')
-    .eq('user_id', currentUser.id)
-    .eq('date', today)
-    .maybeSingle();
-  messagesUsed = data?.messages_used || 0;
-  updateLimitNote();
-  if (messagesUsed >= DAILY_LIMIT) showLimitReached();
-}
-
-// Guarda cada mensaje usado en la base de datos real (upsert por día)
-async function saveDailyUsageToDB() {
-  if (!currentUser) return;
-  const today = new Date().toISOString().split('T')[0];
-  await supabaseClient.from('daily_usage').upsert(
-    { user_id: currentUser.id, date: today, messages_used: messagesUsed },
-    { onConflict: 'user_id,date' }
-  );
-}
-
-// --- Botón de ayuda/recursos, accesible siempre, sin importar el plan ---
-helpFab.addEventListener('click', () => { resourcesModal.style.display = 'flex'; });
-closeResources.addEventListener('click', () => { resourcesModal.style.display = 'none'; });
-
-// Al tocar una línea de emergencia, se despliega su descripción empática
-document.querySelectorAll('.resource-item.emergency').forEach(item => {
-  const detailText = item.getAttribute('data-detail');
-  const expandDiv = document.createElement('div');
-  expandDiv.className = 'expand-detail';
-  expandDiv.textContent = detailText;
-  item.appendChild(expandDiv);
-  item.addEventListener('click', () => { item.classList.toggle('expanded'); });
-});
-
-// --- Plan de Seguridad Personalizado ---
-// En producción esto abriría un flujo guiado dedicado; en el prototipo
-// se simula iniciando la conversación con un mensaje que arranca el proceso.
-safetyPlanBtn.addEventListener('click', () => {
-  input.value = 'Me gustaría crear mi plan de seguridad personal';
-  sendMessage();
-});
-
-// --- Contador de límite diario ---
-function updateLimitNote() {
-  const restantes = DAILY_LIMIT - messagesUsed;
-  limitNote.textContent = restantes > 0
-    ? `Prototipo visual — plan gratuito: ${restantes} de ${DAILY_LIMIT} mensajes restantes hoy`
-    : `Prototipo visual — plan gratuito: límite diario alcanzado`;
-}
-updateLimitNote();
-
-function showLimitReached() {
-  if (limitReachedShown) return;
-  limitReachedShown = true;
-  const div = document.createElement('div');
-  div.className = 'limit-reached';
-  div.innerHTML = `Llegaste a tu límite de ${DAILY_LIMIT} mensajes de hoy. Vuelve mañana, o pasa a Premium para conversación ilimitada.<br><span class="upsell">Ver Premium</span>`;
-  chat.parentElement.insertBefore(div, limitNote);
-  input.disabled = true;
-  sendBtn.disabled = true;
-}
-
-const SYSTEM_PROMPT = `Eres un asistente de apoyo emocional. Tu rol NO es el de un psicólogo humano,
-y debes recordarlo activamente durante la conversación, sin repetirlo de forma robótica en cada mensaje.
-
-IDENTIDAD Y TONO
-- Adopta un enfoque rogeriano: escucha activa, empatía incondicional, validación emocional genuina antes que nada.
-- Tono cálido, cercano, sin tecnicismos clínicos innecesarios.
-- Nunca minimices lo que la persona siente ni apresures a "solucionar" antes de haber validado.
-- Este es un chat: respuestas breves, 3-5 líneas máximo, nunca un ensayo.
-
-LO QUE SÍ HACES
-- Escuchas y reflejas lo que la persona expresa, sin interpretar de más.
-- Ofreces técnicas psicológicas guiadas (respiración, grounding, reestructuración cognitiva básica)
-  SOLO cuando la persona ya se sintió escuchada, no como primera respuesta.
-- Haces preguntas abiertas, máximo una por respuesta.
-- Recuerdas, cada cierto número de interacciones (no en cada mensaje), que eres un apoyo temporal.
-
-LO QUE NUNCA HACES
-- Nunca das un diagnóstico clínico ni confirmas ni descartas diagnósticos que la persona sugiera.
-- Nunca recetas ni sugieres medicación.
-- Nunca finges ser un humano ni una autoridad clínica.
-- Nunca das consejos de vida definitivos — ayudas a que la persona explore, no decides por ella.
-- Solo hablas de temas de salud emocional/mental; si te preguntan algo totalmente ajeno
-  (clima, tarea, programación, etc.), rediriges con amabilidad de vuelta al espacio de apoyo.
-
-PROTOCOLO DE CRISIS (prioridad máxima, anula todo lo demás)
-- Si detectas señales de ideación suicida, autolesión o riesgo hacia terceros, interrumpe el flujo normal.
-- Responde con calma, sin juicio, validando el dolor sin reforzar el pensamiento de crisis.
-- Antepone SIEMPRE de forma clara y visible: Línea de la Vida, 800-911-2000 (México, 24/7). Si hay señales de peligro físico inmediato (no solo malestar emocional), menciona también el 911 como opción para atención presencial urgente, aclarando la diferencia: la Línea de la Vida es orientación telefónica, el 911 moviliza ayuda física en el lugar.
-- No cierres la conversación de golpe — mantente presente mientras se ofrece la ayuda humana.
-- Nunca prometas confidencialidad absoluta.
-
-PLAN DE SEGURIDAD PERSONALIZADO
-- Si la persona pide crear su "plan de seguridad", guíala de forma conversacional
-  (una pregunta a la vez, nunca como formulario) por estos 6 puntos: 1) señales de
-  alerta propias, 2) estrategias que puede hacer sola, 3) personas/lugares que la
-  distraen, 4) personas a quienes puede pedir ayuda directamente, 5) profesionales
-  y líneas de contacto, 6) cómo hacer su entorno más seguro (con mucho tacto).
-- Al terminar, resume el plan completo de forma clara para que lo pueda guardar.`;
-
-function addMessage(text, role) {
-  const div = document.createElement('div');
-  div.className = 'msg ' + role;
-  if (role === 'ai' && (text.includes('800-911-2000') || text.includes('911'))) {
-    div.classList.add('crisis');
+  // ============================
+  //  PRICING LOGIC
+  // ============================
+  function updateSubscribeBtn() {
+    const btn = $('subscribeBtn');
+    const tierMap = {
+      dia: { label: '1 día', price: '15' },
+      '3dias': { label: '3 días', price: '30' },
+      semana: { label: '1 semana', price: '60' },
+      mes: { label: '1 mes', price: '129' }
+    };
+    const info = tierMap[selectedTier];
+    if (info) {
+      btn.textContent = `Continuar con ${info.label} — $${info.price}`;
+      btn.disabled = false;
+    } else {
+      btn.textContent = 'Selecciona un plan';
+      btn.disabled = true;
+    }
   }
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return div;
-}
 
-function showTyping() {
-  const div = document.createElement('div');
-  div.className = 'typing';
-  div.id = 'typingIndicator';
-  div.innerHTML = '<span></span><span></span><span></span>';
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function removeTyping() {
-  const el = document.getElementById('typingIndicator');
-  if (el) el.remove();
-}
-
-function animateTalking(text, fallbackDurationMs) {
-  const stop = () => {
-    mouth.classList.remove('talking');
-    statusPill.textContent = 'escuchando';
-  };
-  mouth.classList.add('talking');
-  statusPill.textContent = 'hablando';
-
-  if (voiceToggle.checked && 'speechSynthesis' in window) {
-    speak(text, null, stop); // la boca se detiene justo cuando termina de hablar de verdad
-  } else {
-    setTimeout(stop, fallbackDurationMs);
-  }
-}
-
-async function sendMessage() {
-  const text = input.value.trim();
-  if (!text) return;
-  if (messagesUsed >= DAILY_LIMIT) { showLimitReached(); return; }
-
-  messagesUsed++;
-  updateLimitNote();
-  saveDailyUsageToDB(); // guarda el uso real en tu base de datos, no solo en el navegador
-
-  addMessage(text, 'user');
-  input.value = '';
-  sendBtn.disabled = true;
-  showTyping();
-  statusPill.textContent = 'pensando';
-
-  try {
-const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: text, systemPrompt: SYSTEM_PROMPT })
+  // Selección de tiers
+  document.querySelectorAll('.tier-option').forEach(el => {
+    el.addEventListener('click', function() {
+      document.querySelectorAll('.tier-option').forEach(o => o.classList.remove('selected'));
+      this.classList.add('selected');
+      selectedTier = this.dataset.tier;
+      updateSubscribeBtn();
     });
-    const data = await response.json();
-    const reply = data.reply || "Estoy aquí contigo. ¿Puedes contarme un poco más?";
+  });
 
-    removeTyping();
-    addMessage(reply, 'ai');
-    animateTalking(reply, Math.min(reply.length * 45, 4000));
-    if (messagesUsed >= DAILY_LIMIT) showLimitReached();
-  } catch (err) {
-    removeTyping();
-    addMessage("(Prototipo) No se pudo conectar a la IA en este entorno de vista previa — en producción esta respuesta vendría del modelo.", 'ai');
-    statusPill.textContent = 'escuchando';
-  } finally {
-    sendBtn.disabled = false;
+  // Cerrar pricing
+  $('closePricingBtn').addEventListener('click', closePricing);
+  $('closePricingText').addEventListener('click', closePricing);
+
+  // Cerrar al hacer clic fuera
+  pricingModal.addEventListener('click', function(e) {
+    if (e.target === this) closePricing();
+  });
+
+  // Botón de suscripción (placeholder)
+  $('subscribeBtn').addEventListener('click', function() {
+    if (this.disabled) return;
+    alert(`✅ Redirigiendo a pago para ${selectedTier}...\n(Stripe pendiente de conectar)`);
+    closePricing();
+  });
+
+  // Recursos
+  $('helpFab').addEventListener('click', openResources);
+  $('closeResourcesBtn').addEventListener('click', closeResources);
+  resourcesModal.addEventListener('click', function(e) {
+    if (e.target === this) closeResources();
+  });
+
+  // Recursos desde bienvenida
+  $('welcomeResourcesBtn').addEventListener('click', function() {
+    welcomeOverlay.classList.remove('active');
+    openResources();
+  });
+
+  // Expandir recursos de emergencia
+  document.querySelectorAll('.resource-item.emergency').forEach(el => {
+    el.addEventListener('click', function() {
+      this.classList.toggle('expanded');
+    });
+  });
+
+  // ============================
+  //  BIENVENIDA
+  // ============================
+  $('startChatBtn').addEventListener('click', function() {
+    welcomeOverlay.classList.remove('active');
+    messageInput.focus();
+    if (currentUser) {
+      loadMessages();
+    }
+  });
+
+  // ============================
+  //  CONSENTIMIENTO
+  // ============================
+  $('acceptBtn').addEventListener('click', async function() {
+    consentGiven = true;
+    consentModal.style.display = 'none';
+    if (currentUser) {
+      await saveConsent();
+      welcomeOverlay.classList.add('active');
+    } else {
+      openAuth();
+    }
+  });
+
+  async function saveConsent() {
+    if (!currentUser) return;
+    try {
+      await supabase.from('consent_log').insert({
+        user_id: currentUser.id,
+        version_aviso: '1.0'
+      });
+    } catch (e) {
+      console.warn('Consent log error:', e);
+    }
   }
-}
 
-sendBtn.addEventListener('click', sendMessage);
-input.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+  // ============================
+  //  AUTENTICACIÓN
+  // ============================
+  let isLoginMode = false;
+
+  $('authToggle').addEventListener('click', function() {
+    isLoginMode = !isLoginMode;
+    $('authTitle').textContent = isLoginMode ? 'Iniciar sesión' : 'Crea tu cuenta';
+    $('authSubmit').textContent = isLoginMode ? 'Iniciar sesión' : 'Crear cuenta y entrar';
+    $('authToggle').textContent = isLoginMode ? '¿No tienes cuenta? Regístrate' : 'Ya tengo cuenta, iniciar sesión';
+    $('authError').textContent = '';
+  });
+
+  $('authSubmit').addEventListener('click', async function() {
+    const email = $('authEmail').value.trim();
+    const password = $('authPassword').value;
+    const errorEl = $('authError');
+    errorEl.textContent = '';
+
+    if (!email || !password) {
+      errorEl.textContent = 'Correo y contraseña son obligatorios.';
+      return;
+    }
+    if (password.length < 6) {
+      errorEl.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+
+    try {
+      let result;
+      if (isLoginMode) {
+        result = await supabase.auth.signInWithPassword({ email, password });
+      } else {
+        result = await supabase.auth.signUp({ email, password });
+      }
+
+      if (result.error) throw result.error;
+
+      const user = result.data.user;
+      if (user) {
+        await supabase.from('profiles').upsert({
+          id: user.id,
+          email: user.email,
+          plan: 'gratis'
+        });
+        currentUser = user;
+        closeAuth();
+        if (consentGiven) {
+          await saveConsent();
+          welcomeOverlay.classList.add('active');
+        } else {
+          consentModal.style.display = 'flex';
+        }
+        loadMessages();
+      }
+    } catch (err) {
+      errorEl.textContent = err.message || 'Error de autenticación. Intenta de nuevo.';
+    }
+  });
+
+  // ============================
+  //  CHAT LOGIC
+  // ============================
+  async function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text || isLimitReached || !currentUser) return;
+
+    const count = await getTodayUsage();
+    if (count >= DAILY_LIMIT) {
+      isLimitReached = true;
+      updateLimitDisplay(count);
+      return;
+    }
+
+    messageInput.value = '';
+    addMessage('user', text);
+    showTyping();
+
+    await supabase.from('messages').insert({
+      user_id: currentUser.id,
+      role: 'user',
+      content: text
+    });
+
+    await incrementUsage();
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: text,
+          history: messagesHistory.slice(-10)
+        })
+      });
+
+      const data = await response.json();
+      hideTyping();
+
+      if (data.error) {
+        addMessage('ai', 'Lo siento, hubo un problema. Por favor intenta de nuevo.');
+        console.error('API error:', data.error);
+        return;
+      }
+
+      const aiReply = data.reply || 'No pude procesar tu mensaje. Intenta de nuevo.';
+      messagesHistory.push({ role: 'user', content: text });
+      messagesHistory.push({ role: 'ai', content: aiReply });
+
+      await supabase.from('messages').insert({
+        user_id: currentUser.id,
+        role: 'ai',
+        content: aiReply,
+        is_crisis_flag: data.isCrisis || false
+      });
+
+      addMessage('ai', aiReply, data.isCrisis || false);
+
+      const newCount = await getTodayUsage();
+      updateLimitDisplay(newCount);
+
+    } catch (err) {
+      hideTyping();
+      addMessage('ai', 'Lo siento, no pude conectar con el servicio. Intenta de nuevo más tarde.');
+      console.error('Chat error:', err);
+    }
+  }
+
+  async function getTodayUsage() {
+    if (!currentUser) return 0;
+    const today = new Date().toISOString().split('T')[0];
+    const { data, error } = await supabase
+      .from('daily_usage')
+      .select('messages_used')
+      .eq('user_id', currentUser.id)
+      .eq('date', today)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.warn('Usage fetch error:', error);
+      return 0;
+    }
+    return data ? data.messages_used : 0;
+  }
+
+  async function incrementUsage() {
+    if (!currentUser) return;
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase
+      .from('daily_usage')
+      .select('messages_used')
+      .eq('user_id', currentUser.id)
+      .eq('date', today)
+      .single();
+
+    if (data) {
+      await supabase
+        .from('daily_usage')
+        .update({ messages_used: data.messages_used + 1 })
+        .eq('user_id', currentUser.id)
+        .eq('date', today);
+    } else {
+      await supabase
+        .from('daily_usage')
+        .insert({
+          user_id: currentUser.id,
+          date: today,
+          messages_used: 1
+        });
+    }
+  }
+
+  async function loadMessages() {
+    if (!currentUser) return;
+    const { data, error } = await supabase
+      .from('messages')
+      .select('role, content, is_crisis_flag')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: true })
+      .limit(50);
+
+    if (error) {
+      console.warn('Load messages error:', error);
+      return;
+    }
+
+    chatContainer.innerHTML = '';
+    data.forEach(msg => {
+      addMessage(msg.role, msg.content, msg.is_crisis_flag || false);
+      messagesHistory.push({ role: msg.role, content: msg.content });
+    });
+
+    const usage = await getTodayUsage();
+    updateLimitDisplay(usage);
+  }
+
+  // ============================
+  //  EVENT LISTENERS
+  // ============================
+  sendBtn.addEventListener('click', sendMessage);
+  messageInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') sendMessage();
+  });
+
+  $('safetyPlanBtn').addEventListener('click', function() {
+    alert('🛡️ Tu plan de seguridad personal te guiará paso a paso.\n(Próximamente disponible)');
+  });
+
+  // ============================
+  //  INICIALIZACIÓN
+  // ============================
+  async function init() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+      currentUser = session.user;
+      const { data: consent } = await supabase
+        .from('consent_log')
+        .select('id')
+        .eq('user_id', currentUser.id)
+        .maybeSingle();
+
+      if (consent) {
+        consentGiven = true;
+        consentModal.style.display = 'none';
+        welcomeOverlay.classList.add('active');
+        loadMessages();
+      } else {
+        consentModal.style.display = 'flex';
+      }
+    } else {
+      consentModal.style.display = 'flex';
+    }
+
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        currentUser = session.user;
+        closeAuth();
+        if (consentGiven) {
+          welcomeOverlay.classList.add('active');
+          loadMessages();
+        } else {
+          consentModal.style.display = 'flex';
+        }
+      }
+      if (event === 'SIGNED_OUT') {
+        currentUser = null;
+        chatContainer.innerHTML = '';
+        messageInput.disabled = true;
+        sendBtn.disabled = true;
+        welcomeOverlay.classList.remove('active');
+        openAuth();
+      }
+    });
+  }
+
+  init();
+
+  // ============================
+  //  AVATAR ANIMACIONES
+  // ============================
+  function animateMouth(active) {
+    if (active) {
+      mouth.classList.add('talking');
+    } else {
+      mouth.classList.remove('talking');
+    }
+  }
+
+  const observer = new MutationObserver(() => {
+    const typing = document.getElementById('typingIndicator');
+    if (typing) {
+      animateMouth(true);
+    } else {
+      animateMouth(false);
+    }
+  });
+  observer.observe(chatContainer, { childList: true, subtree: true });
+
+  console.log('🌿 Refugio cargado correctamente');
 </script>
-
 </body>
 </html>
