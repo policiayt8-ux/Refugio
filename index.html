@@ -79,7 +79,6 @@
     height: 140px;
   }
 
-  /* Avatar mejorado */
   .face-bg { fill: #E8DDD0; }
   .face { fill: #F5D6B8; }
   .hair { fill: #4A3729; }
@@ -216,7 +215,6 @@
     padding: 0 16px 14px;
   }
 
-  /* Modales */
   .modal-overlay {
     position: fixed;
     inset: 0;
@@ -269,7 +267,6 @@
   }
   .modal-box button:hover { background: var(--olive-deep); }
 
-  /* Pricing modal */
   .pricing-box {
     background: var(--white);
     border-radius: 24px;
@@ -413,7 +410,6 @@
   }
   .close-pricing:hover { color: var(--ink); }
 
-  /* Resources modal */
   .resources-box {
     background: var(--white);
     border-radius: 24px;
@@ -559,7 +555,6 @@
   }
   .limit-reached .upsell:hover { background: var(--olive-deep); }
 
-  /* Pantalla de bienvenida */
   .welcome-overlay {
     position: fixed;
     inset: 0;
@@ -644,7 +639,6 @@
   }
   .welcome-box .plan-note span { color: var(--olive); font-weight: 500; }
 
-  /* Auth styles */
   .auth-input {
     width: 100%;
     padding: 11px 14px;
@@ -825,30 +819,19 @@
   <div class="avatar-stage">
     <div style="display:flex; flex-direction:column; align-items:center;">
       <svg class="avatar" viewBox="0 0 200 200" id="avatarSvg">
-        <!-- Cabeza y cara -->
         <circle class="face-bg" cx="100" cy="105" r="72"/>
         <path class="hair" d="M 35 90 Q 30 30 100 28 Q 170 30 165 90 Q 150 55 100 55 Q 50 55 35 90 Z"/>
         <circle class="face" cx="100" cy="112" r="58"/>
-
-        <!-- Ojos -->
         <ellipse class="eye left" cx="80" cy="105" rx="5" ry="7"/>
         <ellipse class="eye right" cx="120" cy="105" rx="5" ry="7"/>
-
-        <!-- Cejas -->
         <path d="M 72 92 Q 80 87 88 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
         <path d="M 112 92 Q 120 87 128 92" stroke="#5A4636" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-
-        <!-- Lentes -->
         <circle class="glasses-lens" cx="80" cy="105" r="16"/>
         <circle class="glasses-lens" cx="120" cy="105" r="16"/>
         <path class="glasses" d="M 96 105 L 104 105"/>
         <path class="glasses" d="M 64 105 L 64 95 Q 64 88 72 88 L 88 88"/>
         <path class="glasses" d="M 136 105 L 136 95 Q 136 88 128 88 L 112 88"/>
-
-        <!-- Boca (sonrisa suave) -->
         <ellipse class="mouth" id="mouth" cx="100" cy="138" rx="10" ry="4"/>
-
-        <!-- Bata blanca (cuello) -->
         <path class="lab-coat" d="M 70 165 L 60 200 L 140 200 L 130 165 Z"/>
         <path d="M 90 165 L 100 175 L 110 165" stroke="#D0D8E0" stroke-width="1.5" fill="none"/>
       </svg>
@@ -870,11 +853,11 @@
 
 <!-- ===== JAVASCRIPT ===== -->
 <script>
-  // ============================
-  //  CONFIGURACIÓN
-  // ============================
+  // ============================================
+  // CONFIGURACIÓN (claves ya configuradas)
+  // ============================================
   const SUPABASE_URL = 'https://dnopuyvtiufwdnkuymab.supabase.co';
-  const SUPABASE_ANON_KEY = 'sb_publishable_mFVSpg_2l8TeKSRbQwAczg_kz8vpiLF';
+const SUPABASE_ANON_KEY = 'sb_publishable_mFVSpg_2l8TeKSRbQwAczg_kz8vpiLF';
 
   const DAILY_LIMIT = 6;
   let currentUser = null;
@@ -883,32 +866,31 @@
   let selectedTier = 'mes';
   let consentGiven = false;
 
-  // ============================
-  //  SUPABASE CLIENT
-  // ============================
+  // ============================================
+  // SUPABASE CLIENT
+  // ============================================
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ============================
-  //  DOM REFS
-  // ============================
+  // ============================================
+  // DOM REFS
+  // ============================================
   const $ = id => document.getElementById(id);
-  const chatContainer = $('chatContainer');
-  const messageInput = $('messageInput');
-  const sendBtn = $('sendBtn');
-  const limitNote = $('limitNote');
-  const statusPill = $('statusPill');
+  const chatContainer = $('#chatContainer');
+  const messageInput = $('#messageInput');
+  const sendBtn = $('#sendBtn');
+  const limitNote = $('#limitNote');
+  const statusPill = $('#statusPill');
   const mouth = document.getElementById('mouth');
 
-  // Modales
-  const consentModal = $('consentModal');
-  const authModal = $('authModal');
-  const pricingModal = $('pricingModal');
-  const resourcesModal = $('resourcesModal');
-  const welcomeOverlay = $('welcomeOverlay');
+  const consentModal = $('#consentModal');
+  const authModal = $('#authModal');
+  const pricingModal = $('#pricingModal');
+  const resourcesModal = $('#resourcesModal');
+  const welcomeOverlay = $('#welcomeOverlay');
 
-  // ============================
-  //  FUNCIONES DE UTILIDAD
-  // ============================
+  // ============================================
+  // FUNCIONES DE UTILIDAD
+  // ============================================
   function addMessage(role, content, isCrisis = false) {
     const msg = document.createElement('div');
     msg.className = `msg ${role}`;
@@ -980,9 +962,9 @@
     if (el) el.remove();
   }
 
-  // ============================
-  //  MODALES
-  // ============================
+  // ============================================
+  // MODALES
+  // ============================================
   function openPricing() {
     pricingModal.style.display = 'flex';
     document.querySelectorAll('.tier-option').forEach(el => el.classList.remove('selected'));
@@ -1012,11 +994,11 @@
     authModal.style.display = 'none';
   }
 
-  // ============================
-  //  PRICING LOGIC
-  // ============================
+  // ============================================
+  // PRICING LOGIC
+  // ============================================
   function updateSubscribeBtn() {
-    const btn = $('subscribeBtn');
+    const btn = $('#subscribeBtn');
     const tierMap = {
       dia: { label: '1 día', price: '15' },
       '3dias': { label: '3 días', price: '30' },
@@ -1033,7 +1015,6 @@
     }
   }
 
-  // Selección de tiers
   document.querySelectorAll('.tier-option').forEach(el => {
     el.addEventListener('click', function() {
       document.querySelectorAll('.tier-option').forEach(o => o.classList.remove('selected'));
@@ -1043,46 +1024,40 @@
     });
   });
 
-  // Cerrar pricing
-  $('closePricingBtn').addEventListener('click', closePricing);
-  $('closePricingText').addEventListener('click', closePricing);
+  $('#closePricingBtn').addEventListener('click', closePricing);
+  $('#closePricingText').addEventListener('click', closePricing);
 
-  // Cerrar al hacer clic fuera
   pricingModal.addEventListener('click', function(e) {
     if (e.target === this) closePricing();
   });
 
-  // Botón de suscripción (placeholder)
-  $('subscribeBtn').addEventListener('click', function() {
+  $('#subscribeBtn').addEventListener('click', function() {
     if (this.disabled) return;
     alert(`✅ Redirigiendo a pago para ${selectedTier}...\n(Stripe pendiente de conectar)`);
     closePricing();
   });
 
-  // Recursos
-  $('helpFab').addEventListener('click', openResources);
-  $('closeResourcesBtn').addEventListener('click', closeResources);
+  $('#helpFab').addEventListener('click', openResources);
+  $('#closeResourcesBtn').addEventListener('click', closeResources);
   resourcesModal.addEventListener('click', function(e) {
     if (e.target === this) closeResources();
   });
 
-  // Recursos desde bienvenida
-  $('welcomeResourcesBtn').addEventListener('click', function() {
+  $('#welcomeResourcesBtn').addEventListener('click', function() {
     welcomeOverlay.classList.remove('active');
     openResources();
   });
 
-  // Expandir recursos de emergencia
   document.querySelectorAll('.resource-item.emergency').forEach(el => {
     el.addEventListener('click', function() {
       this.classList.toggle('expanded');
     });
   });
 
-  // ============================
-  //  BIENVENIDA
-  // ============================
-  $('startChatBtn').addEventListener('click', function() {
+  // ============================================
+  // BIENVENIDA
+  // ============================================
+  $('#startChatBtn').addEventListener('click', function() {
     welcomeOverlay.classList.remove('active');
     messageInput.focus();
     if (currentUser) {
@@ -1090,10 +1065,10 @@
     }
   });
 
-  // ============================
-  //  CONSENTIMIENTO
-  // ============================
-  $('acceptBtn').addEventListener('click', async function() {
+  // ============================================
+  // CONSENTIMIENTO
+  // ============================================
+  $('#acceptBtn').addEventListener('click', async function() {
     consentGiven = true;
     consentModal.style.display = 'none';
     if (currentUser) {
@@ -1116,23 +1091,23 @@
     }
   }
 
-  // ============================
-  //  AUTENTICACIÓN
-  // ============================
+  // ============================================
+  // AUTENTICACIÓN
+  // ============================================
   let isLoginMode = false;
 
-  $('authToggle').addEventListener('click', function() {
+  $('#authToggle').addEventListener('click', function() {
     isLoginMode = !isLoginMode;
-    $('authTitle').textContent = isLoginMode ? 'Iniciar sesión' : 'Crea tu cuenta';
-    $('authSubmit').textContent = isLoginMode ? 'Iniciar sesión' : 'Crear cuenta y entrar';
-    $('authToggle').textContent = isLoginMode ? '¿No tienes cuenta? Regístrate' : 'Ya tengo cuenta, iniciar sesión';
-    $('authError').textContent = '';
+    $('#authTitle').textContent = isLoginMode ? 'Iniciar sesión' : 'Crea tu cuenta';
+    $('#authSubmit').textContent = isLoginMode ? 'Iniciar sesión' : 'Crear cuenta y entrar';
+    $('#authToggle').textContent = isLoginMode ? '¿No tienes cuenta? Regístrate' : 'Ya tengo cuenta, iniciar sesión';
+    $('#authError').textContent = '';
   });
 
-  $('authSubmit').addEventListener('click', async function() {
-    const email = $('authEmail').value.trim();
-    const password = $('authPassword').value;
-    const errorEl = $('authError');
+  $('#authSubmit').addEventListener('click', async function() {
+    const email = $('#authEmail').value.trim();
+    const password = $('#authPassword').value;
+    const errorEl = $('#authError');
     errorEl.textContent = '';
 
     if (!email || !password) {
@@ -1176,9 +1151,9 @@
     }
   });
 
-  // ============================
-  //  CHAT LOGIC
-  // ============================
+  // ============================================
+  // CHAT LOGIC
+  // ============================================
   async function sendMessage() {
     const text = messageInput.value.trim();
     if (!text || isLimitReached || !currentUser) return;
@@ -1312,21 +1287,21 @@
     updateLimitDisplay(usage);
   }
 
-  // ============================
-  //  EVENT LISTENERS
-  // ============================
+  // ============================================
+  // EVENT LISTENERS
+  // ============================================
   sendBtn.addEventListener('click', sendMessage);
   messageInput.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') sendMessage();
   });
 
-  $('safetyPlanBtn').addEventListener('click', function() {
+  $('#safetyPlanBtn').addEventListener('click', function() {
     alert('🛡️ Tu plan de seguridad personal te guiará paso a paso.\n(Próximamente disponible)');
   });
 
-  // ============================
-  //  INICIALIZACIÓN
-  // ============================
+  // ============================================
+  // INICIALIZACIÓN
+  // ============================================
   async function init() {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -1373,9 +1348,9 @@
 
   init();
 
-  // ============================
-  //  AVATAR ANIMACIONES
-  // ============================
+  // ============================================
+  // AVATAR ANIMACIONES
+  // ============================================
   function animateMouth(active) {
     if (active) {
       mouth.classList.add('talking');
